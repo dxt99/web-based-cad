@@ -16,8 +16,12 @@ gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
 // Clear the canvas
 gl.clearColor(0, 0, 0, 0);
 
-// Bind the position buffer.
-var vBuffer = gl.createBuffer();
+var vs = 'attribute vec2 pos;' +
+				 'void main() { gl_Position = vec4(pos, 0, 1); }';
+var fs = 'precision mediump float;' +
+            'void main() { gl_FragColor = vec4(0,0,0,1); }';
+var program = createProgram(vs,fs);
+gl.useProgram(program);
 
 // states
 let mode = "cursor";
@@ -29,7 +33,9 @@ let models = {
 
 // rendering
 function render(){
-
+    models['lines'].forEach(line => {
+        line.render(gl, program)
+    });
 }
 
 function changeState(newMode){
@@ -51,13 +57,16 @@ function handleLineClick(x, y){
         pendingLine.end = [x, y]
         models['lines'].push(pendingLine)
         pendingLine = new Line()
+        render()
         prompt.innerHTML = "Select line start"
     }
 }
 
 function handleClick(canvas, event){
-    const x = event.clientX - rect.left
-    const y = event.clientY - rect.top
+    const x = (event.clientX - rect.left) * canvas.width/canvas.clientWidth
+    const y = (event.clientY - rect.top) * canvas.height/canvas.clientHeight
+    console.log(x)
+    console.log(y)
     if (mode=="line")handleLineClick(x, y)
 }
 
