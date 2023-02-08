@@ -17,12 +17,12 @@ class Line{
 
     render(gl, program){
         var vertices = [
-            to_float_x(this.start[0], gl.canvas.width), 
-            to_float_y(this.start[1], gl.canvas.height), 
-            to_float_x(this.end[0], gl.canvas.width),
-            to_float_y(this.end[1], gl.canvas.height), 
+            this.start[0],
+            this.start[1],
+            this.end[0],
+            this.end[1],
         ];
-        console.log(vertices)
+        
         var vertexPosBuffer = gl.createBuffer();
         gl.bindBuffer(gl.ARRAY_BUFFER, vertexPosBuffer);
         program.vertexPosAttrib = gl.getAttribLocation(program, 'pos');
