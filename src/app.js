@@ -5,6 +5,7 @@ const canvas = document.getElementById("canvas")
 const cursorButton = document.getElementById("cursor")
 const lineButton = document.getElementById("line")
 const squareButton = document.getElementById("square")
+const rectangleButton = document.getElementById("rectangle")
 const clearButton = document.getElementById("clear")
 const prompt = document.getElementById("prompt")
 
@@ -35,6 +36,7 @@ gl.useProgram(program);
 */
 let mode = "cursor";
 let pendingLine = new Line()
+let pendingRectangle = new Rectangle()
 let models = {
     "lines" : [],
     "squares": [],
@@ -49,9 +51,11 @@ function render(){
     gl.clear(gl.COLOR_BUFFER_BIT);
 
     models['lines'].forEach(line => {
-        console.log(line)
         line.render(gl, program)
-    });
+    })
+    models['rectangles'].forEach(rect => {
+        rect.render(gl, program)
+    })
 }
 /* 
     Listener logic
@@ -68,9 +72,9 @@ function changeState(newMode){
     console.log(newMode)
     pendingLine = new Line()
     mode = newMode
-    console.log(mode)
     if (mode=="cursor") prompt.innerHTML = "Cursor mode"
     if (mode=="line") prompt.innerHTML = "Select line start"
+    if (mode=="rectangle") prompt.innerHTML = "Select rectangle upper left corner"
 }
 
 
@@ -101,6 +105,26 @@ function handleLineClick(x, y){
     }
 }
 
+function handleRectangleClick(x, y){
+    if (pendingRectangle.start === null){
+        // add start of rectangle
+        pendingRectangle.start = [x, y]
+        prompt.innerHTML = "Select rectangle lower right corner"
+    }
+    else if (pendingRectangle.end === null){
+        // add end of line
+        if (pendingRectangle.start[0] < x){
+            pendingRectangle.end = pendingRectangle.start
+            pendingRectangle.start = [x, y]
+        }
+        else pendingRectangle.end = [x, y]
+        models['rectangles'].push(pendingRectangle)
+        pendingRectangle = new Rectangle()
+        render()
+        prompt.innerHTML = "Select rectangle upper left corner"
+    }
+}
+
 function handleClick(canvas, event){
     // handles clicks on canvas
     let x = (event.clientX - rect.left) * canvas.width/canvas.clientWidth
@@ -111,6 +135,7 @@ function handleClick(canvas, event){
     console.log(y)
     // checks for current mode
     if (mode=="line")handleLineClick(x, y)
+    if (mode=="rectangle")handleRectangleClick(x, y)
 }
 
 /*
@@ -119,6 +144,7 @@ function handleClick(canvas, event){
 cursorButton.addEventListener("click", () => {changeState("cursor")})
 lineButton.addEventListener("click", () => {changeState("line")})
 squareButton.addEventListener("click", () => {changeState("square")})
+rectangleButton.addEventListener("click", () => {changeState("rectangle")})
 clearButton.addEventListener("click", () => {resetModels()})
 
 canvas.addEventListener('mousedown', function(e) {
