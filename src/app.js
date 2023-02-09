@@ -2,6 +2,7 @@
     HTML Elements
 */
 const canvas = document.getElementById("canvas")
+const colorPicker = document.getElementById("colorPicker")
 const cursorButton = document.getElementById("cursor")
 const lineButton = document.getElementById("line")
 const squareButton = document.getElementById("square")
@@ -50,7 +51,7 @@ let models = {
     "squares": [],
     "rectangles": []
 }
-let curColor = [1, 0, 0.2, 1.0]
+let curColor = [0, 0, 0, 1.0]
 
 /* 
     Rendering
@@ -88,6 +89,7 @@ function changeState(newMode){
 
 
 function resetModels(){
+    // deletes all models
     clearStates()
     models = {
         "lines" : [],
@@ -95,6 +97,18 @@ function resetModels(){
         "rectangles": []
     }
     render()
+}
+
+function changeColor(){
+    // changes current color
+    let color = colorPicker.value
+    let red = parseInt(color.slice(1, 3), 16)
+    let green = parseInt(color.slice(3, 5), 16)
+    let blue = parseInt(color.slice(5, 7), 16)
+    curColor = [red/255.0, green/255.0, blue/255.0, 1.0]
+    console.log("Color")
+    console.log(red)
+    console.log(curColor)
 }
 
 
@@ -161,4 +175,5 @@ clearButton.addEventListener("click", () => {resetModels()})
 canvas.addEventListener('mousedown', function(e) {
     handleClick(canvas, e)
 })
+colorPicker.addEventListener("change", () => {changeColor()})
 
