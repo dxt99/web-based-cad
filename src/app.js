@@ -44,13 +44,13 @@ gl.useProgram(program);
 /*
     States
     mode -> current mode of operation: cursor/line/square/rectangle
-    pendingLine ->  line to be drawn, used on line mode
+    pendingModel->  model to be drawn, model type depends on mode of operation
+    selectedModel -> model to be operated on, type depends on mode of operation
     models -> all models that are going to be rendered
 */
 let mode = "cursor";
-let pendingLine = new Line()
-let pendingRectangle = new Rectangle()
-let selectedRectangle = null
+let pendingModel = null
+let selectedModel = null
 let models = {
     "lines" : [],
     "squares": [],
@@ -78,7 +78,7 @@ function render(){
 
 function clearStates(){
     // clears all pending states
-    pendingLine = new Line()
+    pendingModel = null
     rectangleForm.style.display = "none"
     actionDisplay.style.display = "none"
 }
@@ -86,11 +86,16 @@ function clearStates(){
 function changeState(newMode){
     // changes mode of operations
     console.log(newMode)
-    pendingLine = new Line()
     mode = newMode
     if (mode=="cursor") prompt.innerHTML = "Cursor mode"
-    if (mode=="line") prompt.innerHTML = "Select line start"
-    if (mode=="rectangle") prompt.innerHTML = "Select rectangle upper left corner"
+    if (mode=="line"){
+        prompt.innerHTML = "Select line start"
+        pendingModel = new Line()
+    }
+    if (mode=="rectangle"){
+        prompt.innerHTML = "Select rectangle upper left corner"
+        pendingModel = new Rectangle()
+    }
 }
 
 
@@ -127,94 +132,96 @@ function changeColor(){
 
 
 function handleLineClick(x, y){
-    if (pendingLine.start === null){
+    if (pendingModel.start === null){
         // add start of line
-        pendingLine.start = [x, y]
-        pendingLine.startColor = curColor
+        pendingModel.start = [x, y]
+        pendingModel.startColor = curColor
         prompt.innerHTML = "Select line end"
     }
-    else if (pendingLine.end === null){
+    else if (pendingModel.end === null){
         // add end of line
-        pendingLine.end = [x, y]
-        pendingLine.endColor = curColor
-        models['lines'].push(pendingLine)
-        pendingLine = new Line()
+        pendingModel.end = [x, y]
+        pendingModel.endColor = curColor
+        models['lines'].push(pendingModel)
+        pendingModel = new Line()
         prompt.innerHTML = "Select line start"
     }
 }
 
 function handleRectangleClick(x, y){
-    if (pendingRectangle.start === null){
+    if (pendingModel.start === null){
         // add start of rectangle
-        pendingRectangle.start = [x, y]
-        pendingRectangle.startColor = curColor
+        pendingModel.start = [x, y]
+        pendingModel.startColor = curColor
         prompt.innerHTML = "Select rectangle lower right corner"
     }
-    else if (pendingRectangle.end === null){
+    else if (pendingModel.end === null){
         // add end of line
-        if (pendingRectangle.start[0] > x){
-            pendingRectangle.end = pendingRectangle.start
-            pendingRectangle.endColor = pendingRectangle.startColor
-            pendingRectangle.startColor = curColor
-            pendingRectangle.start = [x, y]
+        if (pendingModel.start[0] > x){
+            pendingModel.end = pendingModel.start
+            pendingModel.endColor = pendingModel.startColor
+            pendingModel.startColor = curColor
+            pendingModel.start = [x, y]
         }
         else {
-            pendingRectangle.end = [x, y]
-            pendingRectangle.endColor = curColor
+            pendingModel.end = [x, y]
+            pendingModel.endColor = curColor
         }
-        models['rectangles'].push(pendingRectangle)
-        pendingRectangle = new Rectangle()
+        models['rectangles'].push(pendingModel)
+        pendingModel = new Rectangle()
         prompt.innerHTML = "Select rectangle upper left corner"
     }
 }
 
 function handleRectangleSelect(){
-    let ret = selectedRectangle.getSize()
+    let ret = selectedModel.getSize()
     let width = ret[0]
     let height = ret[1]
     console.log("Changing element")
     actionDisplay.style.display = "block"
     actionDisplay.innerHTML = `
-        <p>Current size: w = ${width * gl.canvas.width / 2}, 
-        h = ${height * gl.canvas.height / 2}</p>
+        <p>Current size: w = ${to_pixel_x(width, gl.canvas)}, 
+        h = ${to_pixel_y(height, gl.canvas)}</p>
     `
     rectangleForm.style.display = "block"
 }
 
 function changeRectangleSize(){
-    var index = models["rectangles"].indexOf(selectedRectangle);
+    var index = models["rectangles"].indexOf(selectedModel);
     if (index !== -1) {
         models["rectangles"].splice(index, 1);
     }
     try{
         let val = parseFloat(document.getElementById("fname").value)
-        val = val * 2 / gl.canvas.width
-        selectedRectangle.setWidth(val)
+        val = to_gl_x(val, gl.canvas)
+        selectedModel.setWidth(val)
     }catch{}
     try{
         let val = parseFloat(document.getElementById("lname").value)
-        val = val * 2 / gl.canvas.height
-        selectedRectangle.setHeight(val)
+        val = to_gl_y(val, gl.canvas)
+        selectedModel.setHeight(val)
     }catch{}
     
-    models["rectangles"].push(selectedRectangle)
+    models["rectangles"].push(selectedModel)
+    handleRectangleSelect()
 }
 
 function handleClick(canvas, event){
     // handles clicks on canvas
     let x = (event.clientX - rect.left) * canvas.width/canvas.clientWidth
     let y = (event.clientY - rect.top) * canvas.height/canvas.clientHeight
-    x = to_float_x(x, gl.canvas.width)
-    y = to_float_y(y, gl.canvas.height)
+    x = to_float_x(x, gl.canvas)
+    y = to_float_y(y, gl.canvas)
     console.log(x)
     console.log(y)
     // checks for current mode
     if (mode=="cursor"){
+        // check if a model is clicked
         let ret = getOnCoord(x, y)
         let type = ret[0]
         let model = ret[1]
+        selectedModel = model
         if (type == "rectangles"){
-            selectedRectangle = model
             handleRectangleSelect()
         }
     }
