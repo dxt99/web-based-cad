@@ -6,6 +6,15 @@ class Line{
         this.endColor = null
     }
 
+    copy(data){
+        console.log("here")
+        this.start = data["start"]
+        this.end = data["end"]
+        this.startColor = data["startColor"]
+        this.endColor = data["endColor"]
+        console.log(this.start)
+    }
+
     isOnVertex(x, y, delta = 5) {
         f = false
         if (this.start !== null && euclidian([x, y], this.start) <= delta){

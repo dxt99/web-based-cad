@@ -9,6 +9,7 @@ const squareButton = document.getElementById("square")
 const rectangleButton = document.getElementById("rectangle")
 const clearButton = document.getElementById("clear")
 const saveButton = document.getElementById("save")
+const loadButton = document.getElementById("load")
 
 const prompt = document.getElementById("prompt")
 const actionDisplay = document.getElementById("actionDisplay")
@@ -81,7 +82,8 @@ function render(){
     Listener logic
 */
 function saveAllModels(){
-    const file = new File([JSON.stringify(models)], 'save.json', {
+    data = JSON.stringify(models)
+    const file = new File([data], `save_${new Date().getTime()}.json`, {
         type: 'text/json',
     })
     const link = document.createElement('a')
@@ -94,6 +96,43 @@ function saveAllModels(){
 
     document.body.removeChild(link)
     window.URL.revokeObjectURL(url)
+}
+
+function loadAllModels(){
+    var input = document.createElement('input');
+    input.type = 'file';
+    document.body.appendChild(input)
+    input.onchange = e => { 
+        // getting a hold of the file reference
+        var file = e.target.files[0]; 
+
+        // setting up the reader
+        var reader = new FileReader();
+        reader.readAsText(file,'UTF-8');
+
+        // here we tell the reader what to do when it's done reading...
+        reader.onload = readerEvent => {
+            var content = readerEvent.target.result; // this is the content!
+            data = JSON.parse(content)
+            resetModels()
+            for (const [key, value] of Object.entries(data)) {
+                value.forEach(model => {
+                    let newModel = null;
+                    if (key === "lines") newModel = new Line()
+                    if (key === "rectangles") newModel = new Rectangle()
+                    newModel.copy(model)
+                    console.log(newModel)
+                    models[key].push(newModel)
+                })
+            }
+            console.log(data)
+            console.log(models)
+        }
+    }
+    input.click();
+    document.body.removeChild(input)
+
+
 }
 
 function clearStates(){
@@ -275,6 +314,7 @@ squareButton.addEventListener("click", () => {changeState("square")})
 rectangleButton.addEventListener("click", () => {changeState("rectangle")})
 clearButton.addEventListener("click", () => {resetModels()})
 saveButton.addEventListener("click", () => {saveAllModels()})
+loadButton.addEventListener("click", () => {loadAllModels()})
 
 lineLengthButton.addEventListener("click", () => {changeLineSize()})
 rectangleSizeButton.addEventListener("click", () => {changeRectangleSize()})

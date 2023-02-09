@@ -7,14 +7,22 @@ class Rectangle{
 
         this.vertexRight = null
         this.rightColor = null
-        this.vertextLeft = null
+        this.vertexLeft = null
         this.leftColor = null
     }
 
+    copy(data){
+        this.start = data["start"]
+        this.end = data["end"]
+        this.startColor = data["startColor"]
+        this.endColor = data["endColor"]
+        this.vertexRight = data["vertexRight"]
+        this.rightColor = data["rightColor"]
+        this.vertexLeft = data["vertexLeft"]
+        this.leftColor = data["leftColor"]
+    }
+
     isOnModel(x, y, delta = 0) {
-        // TODO
-        console.log(this.start)
-        console.log(this.end)
         return x>=this.start[0] && x<=this.end[0] && y<=this.start[1] && y>=this.end[1]
     }
 
@@ -48,14 +56,14 @@ class Rectangle{
             [this.rightColor, this.leftColor] = [this.leftColor, this.rightColor]
         }
         this.vertexRight = [this.end[0], this.start[1]]
-        this.vertextLeft = [this.start[0], this.end[1]]
+        this.vertexLeft = [this.start[0], this.end[1]]
         if (this.rightColor === null)this.rightColor = this.startColor
         if (this.leftColor === null)this.leftColor = this.endColor
         var vertices = flatten2d([
             this.start,
             this.vertexRight,
             this.end,
-            this.vertextLeft
+            this.vertexLeft
         ])
 
         var colors = flatten2d([
