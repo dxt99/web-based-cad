@@ -134,15 +134,21 @@ function handleRectangleClick(x, y){
     if (pendingRectangle.start === null){
         // add start of rectangle
         pendingRectangle.start = [x, y]
+        pendingRectangle.startColor = curColor
         prompt.innerHTML = "Select rectangle lower right corner"
     }
     else if (pendingRectangle.end === null){
         // add end of line
         if (pendingRectangle.start[0] < x){
             pendingRectangle.end = pendingRectangle.start
+            pendingRectangle.endColor = pendingRectangle.startColor
+            pendingRectangle.startColor = curColor
             pendingRectangle.start = [x, y]
         }
-        else pendingRectangle.end = [x, y]
+        else {
+            pendingRectangle.end = [x, y]
+            pendingRectangle.endColor = curColor
+        }
         models['rectangles'].push(pendingRectangle)
         pendingRectangle = new Rectangle()
         render()
