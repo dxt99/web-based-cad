@@ -15,10 +15,18 @@ const prompt = document.getElementById("prompt")
 const gl = WebGLUtils.setupWebGL(canvas);
 const rect = canvas.getBoundingClientRect()
 
-var vs = 'attribute vec2 pos;' +
-				 'void main() { gl_Position = vec4(pos, 0, 1); }';
-var fs = 'precision mediump float;' +
-            'void main() { gl_FragColor = vec4(0,0,0,1); }';
+var vs = `attribute vec2 pos;
+        varying vec4 fColor;
+        attribute vec4 vColor;
+		void main() { 
+            gl_Position = vec4(pos, 0, 1); 
+            fColor = vColor;
+        }`
+var fs = `precision mediump float; 
+        varying vec4 fColor;
+        void main() { 
+            gl_FragColor = fColor; 
+        }`
 var program = createProgram(vs,fs);
 // Tell WebGL how to convert from clip space to pixels
 gl.viewport(0, 0, gl.canvas.width, gl.canvas.height);
@@ -42,6 +50,7 @@ let models = {
     "squares": [],
     "rectangles": []
 }
+let curColor = [1, 0, 0.2, 1.0]
 
 /* 
     Rendering
@@ -93,11 +102,13 @@ function handleLineClick(x, y){
     if (pendingLine.start === null){
         // add start of line
         pendingLine.start = [x, y]
+        pendingLine.startColor = curColor
         prompt.innerHTML = "Select line end"
     }
     else if (pendingLine.end === null){
         // add end of line
         pendingLine.end = [x, y]
+        pendingLine.endColor = curColor
         models['lines'].push(pendingLine)
         pendingLine = new Line()
         render()
