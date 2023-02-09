@@ -8,6 +8,7 @@ const lineButton = document.getElementById("line")
 const squareButton = document.getElementById("square")
 const rectangleButton = document.getElementById("rectangle")
 const clearButton = document.getElementById("clear")
+const saveButton = document.getElementById("save")
 
 const prompt = document.getElementById("prompt")
 const actionDisplay = document.getElementById("actionDisplay")
@@ -79,6 +80,21 @@ function render(){
 /* 
     Listener logic
 */
+function saveAllModels(){
+    const file = new File([JSON.stringify(models)], 'save.json', {
+        type: 'text/json',
+    })
+    const link = document.createElement('a')
+    const url = URL.createObjectURL(file)
+
+    link.href = url
+    link.download = file.name
+    document.body.appendChild(link)
+    link.click()
+
+    document.body.removeChild(link)
+    window.URL.revokeObjectURL(url)
+}
 
 function clearStates(){
     // clears all pending states
@@ -236,8 +252,6 @@ function handleClick(canvas, event){
     let y = (event.clientY - rect.top) * canvas.height/canvas.clientHeight
     x = to_float_x(x, gl.canvas)
     y = to_float_y(y, gl.canvas)
-    console.log(x)
-    console.log(y)
     // checks for current mode
     if (mode=="cursor"){
         // check if a model is clicked
@@ -260,6 +274,7 @@ lineButton.addEventListener("click", () => {changeState("line")})
 squareButton.addEventListener("click", () => {changeState("square")})
 rectangleButton.addEventListener("click", () => {changeState("rectangle")})
 clearButton.addEventListener("click", () => {resetModels()})
+saveButton.addEventListener("click", () => {saveAllModels()})
 
 lineLengthButton.addEventListener("click", () => {changeLineSize()})
 rectangleSizeButton.addEventListener("click", () => {changeRectangleSize()})
