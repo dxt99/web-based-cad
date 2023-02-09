@@ -31,14 +31,14 @@ class Rectangle{
 
     setWidth(len){
         mid = (this.start[0] + this.end[0]) / 2
-        this.start[0] = mid - len / 2
-        this.end[1] = mid + len / 2
+        this.start[0] = mid - (len / 2)
+        this.end[0] = mid + (len / 2)
     }
 
     setHeight(len){
         mid = (this.start[1] + this.end[1]) / 2
-        this.start[1] = mid + len / 2
-        this.end[1] = mid - len / 2
+        this.start[1] = mid + (len / 2)
+        this.end[1] = mid - (len / 2)
     }
 
     render(gl, program){

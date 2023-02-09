@@ -23,12 +23,21 @@
                 clear
             </button>
         </div>
-        <canvas id="canvas" width="1920" height="860"></canvas>
+        <canvas id="canvas" width="1080" height="400"></canvas>
         <div class="prompt">
             <p id="prompt">Happy Drawing!</p>
         </div>
-        <div class = "actions" id = "actions">
-
+        <div class = "actions" id = "actionDiv">
+            <div id = "actionDisplay" style = "display: none"></div>
+            <div id = "rectangleForm" style = "display: none">
+                <form>
+                    <label for="fname">Set width:</label>
+                    <input type="text" id="fname" name="fname"><br>
+                    <label for="lname">Set height:</label>
+                    <input type="text" id="lname" name="lname"><br>
+                    <input type="button" value="Submit" id="submitRectangleSize">
+                </form>
+            </div>
         </div>
     </body>
     <script type="text/javascript" src="utils.js"></script>

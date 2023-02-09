@@ -9,8 +9,6 @@ h4 {
 #canvas {
     margin-top: 16px;
     border:3px solid rgb(67, 94, 247);
-    width: 98vw;
-    height: 60vh;
 }
 
 .button-wrapper{
@@ -33,9 +31,11 @@ h4 {
 .prompt{
     width: 98vw;
     font-size: 16px;
-    text-align: center;
+    padding-left: 16px;
+    text-align: left;
 }
 
 .actions{
-    text-align: center;
+    padding-left: 16px;
+    text-align: left;
 }

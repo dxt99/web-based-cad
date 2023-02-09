@@ -10,6 +10,7 @@ function to_float_y(pos, size){
     return 1 - pos / mid
 }
 
+
 // converts 2d array to 1d array
 function flatten2d(arr){
     ret = []

@@ -9,7 +9,10 @@ const squareButton = document.getElementById("square")
 const rectangleButton = document.getElementById("rectangle")
 const clearButton = document.getElementById("clear")
 const prompt = document.getElementById("prompt")
-const actions = document.getElementById("actions")
+const rectangleSizeButton = document.getElementById("submitRectangleSize")
+const actionDisplay = document.getElementById("actionDisplay")
+
+const rectangleForm = document.getElementById("rectangleForm")
 
 /*
     WebGL Setup
@@ -47,6 +50,7 @@ gl.useProgram(program);
 let mode = "cursor";
 let pendingLine = new Line()
 let pendingRectangle = new Rectangle()
+let selectedRectangle = null
 let models = {
     "lines" : [],
     "squares": [],
@@ -75,6 +79,8 @@ function render(){
 function clearStates(){
     // clears all pending states
     pendingLine = new Line()
+    rectangleForm.style.display = "none"
+    actionDisplay.style.display = "none"
 }
 
 function changeState(newMode){
@@ -162,21 +168,36 @@ function handleRectangleClick(x, y){
     }
 }
 
-function handleRectangleSelect(rect){
-    let ret = rect.getSize()
+function handleRectangleSelect(){
+    let ret = selectedRectangle.getSize()
     let width = ret[0]
     let height = ret[1]
     console.log("Changing element")
-    actions.innerHTML = `
-        <p>Current size: w = ${width}, h = ${height}</p>
-        <form>
-            <label for="fname">Set width:</label>
-            <input type="text" id="fname" name="fname"><br>
-            <label for="lname">Set height:</label>
-            <input type="text" id="lname" name="lname"><br>
-            <input type="button" value="Submit" id="submitRectangleSize">
-        </form>
+    actionDisplay.style.display = "block"
+    actionDisplay.innerHTML = `
+        <p>Current size: w = ${width * gl.canvas.width / 2}, 
+        h = ${height * gl.canvas.height / 2}</p>
     `
+    rectangleForm.style.display = "block"
+}
+
+function changeRectangleSize(){
+    var index = models["rectangles"].indexOf(selectedRectangle);
+    if (index !== -1) {
+        models["rectangles"].splice(index, 1);
+    }
+    try{
+        let val = parseFloat(document.getElementById("fname").value)
+        val = val * 2 / gl.canvas.width
+        selectedRectangle.setWidth(val)
+    }catch{}
+    try{
+        let val = parseFloat(document.getElementById("lname").value)
+        val = val * 2 / gl.canvas.height
+        selectedRectangle.setHeight(val)
+    }catch{}
+    
+    models["rectangles"].push(selectedRectangle)
 }
 
 function handleClick(canvas, event){
@@ -193,7 +214,8 @@ function handleClick(canvas, event){
         let type = ret[0]
         let model = ret[1]
         if (type == "rectangles"){
-            handleRectangleSelect(model)
+            selectedRectangle = model
+            handleRectangleSelect()
         }
     }
     if (mode=="line")handleLineClick(x, y)
@@ -208,6 +230,8 @@ lineButton.addEventListener("click", () => {changeState("line")})
 squareButton.addEventListener("click", () => {changeState("square")})
 rectangleButton.addEventListener("click", () => {changeState("rectangle")})
 clearButton.addEventListener("click", () => {resetModels()})
+
+rectangleSizeButton.addEventListener("click", () => {changeRectangleSize()})
 
 canvas.addEventListener('mousedown', function(e) {
     handleClick(canvas, e)
