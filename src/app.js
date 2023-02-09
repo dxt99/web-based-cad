@@ -8,11 +8,15 @@ const lineButton = document.getElementById("line")
 const squareButton = document.getElementById("square")
 const rectangleButton = document.getElementById("rectangle")
 const clearButton = document.getElementById("clear")
+
 const prompt = document.getElementById("prompt")
-const rectangleSizeButton = document.getElementById("submitRectangleSize")
 const actionDisplay = document.getElementById("actionDisplay")
 
+const lineForm = document.getElementById("lineForm")
+const lineLengthButton = document.getElementById("submitLineLength")
+
 const rectangleForm = document.getElementById("rectangleForm")
+const rectangleSizeButton = document.getElementById("submitRectangleSize")
 
 /*
     WebGL Setup
@@ -79,6 +83,8 @@ function render(){
 function clearStates(){
     // clears all pending states
     pendingModel = null
+    selectedModel = null
+    lineForm.style.display = "none"
     rectangleForm.style.display = "none"
     actionDisplay.style.display = "none"
 }
@@ -87,6 +93,7 @@ function changeState(newMode){
     // changes mode of operations
     console.log(newMode)
     mode = newMode
+    clearStates()
     if (mode=="cursor") prompt.innerHTML = "Cursor mode"
     if (mode=="line"){
         prompt.innerHTML = "Select line start"
@@ -101,7 +108,7 @@ function changeState(newMode){
 
 function resetModels(){
     // deletes all models
-    clearStates()
+    changeState("cursor")
     models = {
         "lines" : [],
         "squares": [],
@@ -148,6 +155,30 @@ function handleLineClick(x, y){
     }
 }
 
+function handleLineSelect(){
+    let ret = selectedModel.getLength()
+    actionDisplay.style.display = "block"
+    actionDisplay.innerHTML = `
+        <p>Current length: ${to_pixel_x(ret, gl.canvas)}</p>
+    `
+    lineForm.style.display = "block"
+}
+
+function changeLineSize(){
+    var index = models["lines"].indexOf(selectedModel);
+    if (index !== -1) {
+        models["lines"].splice(index, 1);
+    }
+    try{
+        let val = parseFloat(document.getElementById("lineLength").value)
+        val = to_gl_x(val, gl.canvas)
+        selectedModel.setLength(val)
+    }catch{}
+    
+    models["lines"].push(selectedModel)
+    handleLineSelect()
+}
+
 function handleRectangleClick(x, y){
     if (pendingModel.start === null){
         // add start of rectangle
@@ -157,16 +188,9 @@ function handleRectangleClick(x, y){
     }
     else if (pendingModel.end === null){
         // add end of line
-        if (pendingModel.start[0] > x){
-            pendingModel.end = pendingModel.start
-            pendingModel.endColor = pendingModel.startColor
-            pendingModel.startColor = curColor
-            pendingModel.start = [x, y]
-        }
-        else {
-            pendingModel.end = [x, y]
-            pendingModel.endColor = curColor
-        }
+        pendingModel.end = [x, y]
+        pendingModel.endColor = curColor
+
         models['rectangles'].push(pendingModel)
         pendingModel = new Rectangle()
         prompt.innerHTML = "Select rectangle upper left corner"
@@ -221,9 +245,8 @@ function handleClick(canvas, event){
         let type = ret[0]
         let model = ret[1]
         selectedModel = model
-        if (type == "rectangles"){
-            handleRectangleSelect()
-        }
+        if (type == "lines") handleLineSelect()
+        if (type == "rectangles")handleRectangleSelect()
     }
     if (mode=="line")handleLineClick(x, y)
     if (mode=="rectangle")handleRectangleClick(x, y)
@@ -238,6 +261,7 @@ squareButton.addEventListener("click", () => {changeState("square")})
 rectangleButton.addEventListener("click", () => {changeState("rectangle")})
 clearButton.addEventListener("click", () => {resetModels()})
 
+lineLengthButton.addEventListener("click", () => {changeLineSize()})
 rectangleSizeButton.addEventListener("click", () => {changeRectangleSize()})
 
 canvas.addEventListener('mousedown', function(e) {

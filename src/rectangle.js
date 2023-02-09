@@ -42,6 +42,11 @@ class Rectangle{
     }
 
     render(gl, program){
+        if (this.start[0] > this.end[0]){
+            [this.start, this.end] = [this.end, this.start]
+            [this.startColor, this.endColor] = [this.endColor, this.startColor]
+            [this.rightColor, this.leftColor] = [this.leftColor, this.rightColor]
+        }
         this.vertexRight = [this.end[0], this.start[1]]
         this.vertextLeft = [this.start[0], this.end[1]]
         if (this.rightColor === null)this.rightColor = this.startColor

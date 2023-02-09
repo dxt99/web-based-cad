@@ -50,3 +50,13 @@ function euclidian(p1, p2){
     let dy = Math.abs(p1[1] - p2[1])
     return Math.sqrt(dx*dx + dy*dy)
 }
+
+// area of n ordered points
+function shoelace(arr){
+    n = arr.length
+    a = arr[n-1][0] * arr[0][1] - arr[n-1][1] * arr[0][0]
+    for(let i=0; i<n-1; i++){
+        a += arr[i][0] * arr[i+1][1] - arr[i][1] * arr[i+1][0]
+    }
+    return Math.abs(a/2)
+}

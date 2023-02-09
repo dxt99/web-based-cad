@@ -6,7 +6,7 @@ class Line{
         this.endColor = null
     }
 
-    isPointOn(x, y, delta = 5) {
+    isOnVertex(x, y, delta = 5) {
         f = false
         if (this.start !== null && euclidian([x, y], this.start) <= delta){
             f = true         
@@ -17,7 +17,35 @@ class Line{
         return f
     }
 
+    getLength(){
+        return euclidian(this.start, this.end)
+    }
+
+    setLength(len){
+        let cur = this.getLength()
+        mid = [
+            (this.start[0] + this.end[0])/2,
+            (this.start[1] + this.end[1])/2
+        ]
+        // cur / len = (x - mid) / (new - mid)
+        // cur * new = len * x - len * mid + cur * mid
+        this.start[0] = (len * this.start[0] + mid[0] * (cur - len)) / cur
+        this.start[1] = (len * this.start[1] + mid[1] * (cur - len)) / cur
+
+        this.end[0] = (len * this.end[0] + mid[0] * (cur - len)) / cur
+        this.end[1] = (len * this.end[1] + mid[1] * (cur - len)) / cur
+    }
+
+    isOnModel(x, y, delta = 0.01){
+        let dist = 2 * shoelace([[x, y], this.start, this.end]) / euclidian(this.start, this.end)
+        return dist <= delta
+    }
+
     render(gl, program){
+        if (this.start[0] > this.end[0]){
+            [this.start, this.end] = [this.end, this.start]
+            [this.startColor, this.endColor] = [this.endColor, this.startColor]
+        }
         var vertices = flatten2d([
             this.start,
             this.end
