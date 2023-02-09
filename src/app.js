@@ -9,6 +9,7 @@ const squareButton = document.getElementById("square")
 const rectangleButton = document.getElementById("rectangle")
 const clearButton = document.getElementById("clear")
 const prompt = document.getElementById("prompt")
+const actions = document.getElementById("actions")
 
 /*
     WebGL Setup
@@ -60,12 +61,11 @@ let curColor = [0, 0, 0, 1.0]
 function render(){
     gl.clear(gl.COLOR_BUFFER_BIT);
 
-    models['lines'].forEach(line => {
-        line.render(gl, program)
-    })
-    models['rectangles'].forEach(rect => {
-        rect.render(gl, program)
-    })
+    for (const [_key, value] of Object.entries(models)) {
+        value.forEach(model => {
+            model.render(gl, program)
+        })
+    }
     window.requestAnimFrame(render)
 }
 /* 
@@ -75,7 +75,6 @@ function render(){
 function clearStates(){
     // clears all pending states
     pendingLine = new Line()
-
 }
 
 function changeState(newMode){
@@ -99,6 +98,18 @@ function resetModels(){
     }
 }
 
+// returns model that is on this coordinate
+function getOnCoord(x, y){
+    for (const [key, value] of Object.entries(models)) {
+        for (const [_idx, model] of Object.entries(value)){
+            if (model.isOnModel(x, y) == true){
+                return [key, model]
+            }
+        }
+    }
+    return ["none", null]
+}
+
 function changeColor(){
     // changes current color
     let color = colorPicker.value
@@ -106,9 +117,6 @@ function changeColor(){
     let green = parseInt(color.slice(3, 5), 16)
     let blue = parseInt(color.slice(5, 7), 16)
     curColor = [red/255.0, green/255.0, blue/255.0, 1.0]
-    console.log("Color")
-    console.log(red)
-    console.log(curColor)
 }
 
 
@@ -138,7 +146,7 @@ function handleRectangleClick(x, y){
     }
     else if (pendingRectangle.end === null){
         // add end of line
-        if (pendingRectangle.start[0] < x){
+        if (pendingRectangle.start[0] > x){
             pendingRectangle.end = pendingRectangle.start
             pendingRectangle.endColor = pendingRectangle.startColor
             pendingRectangle.startColor = curColor
@@ -154,6 +162,23 @@ function handleRectangleClick(x, y){
     }
 }
 
+function handleRectangleSelect(rect){
+    let ret = rect.getSize()
+    let width = ret[0]
+    let height = ret[1]
+    console.log("Changing element")
+    actions.innerHTML = `
+        <p>Current size: w = ${width}, h = ${height}</p>
+        <form>
+            <label for="fname">Set width:</label>
+            <input type="text" id="fname" name="fname"><br>
+            <label for="lname">Set height:</label>
+            <input type="text" id="lname" name="lname"><br>
+            <input type="button" value="Submit" id="submitRectangleSize">
+        </form>
+    `
+}
+
 function handleClick(canvas, event){
     // handles clicks on canvas
     let x = (event.clientX - rect.left) * canvas.width/canvas.clientWidth
@@ -163,6 +188,14 @@ function handleClick(canvas, event){
     console.log(x)
     console.log(y)
     // checks for current mode
+    if (mode=="cursor"){
+        let ret = getOnCoord(x, y)
+        let type = ret[0]
+        let model = ret[1]
+        if (type == "rectangles"){
+            handleRectangleSelect(model)
+        }
+    }
     if (mode=="line")handleLineClick(x, y)
     if (mode=="rectangle")handleRectangleClick(x, y)
 }

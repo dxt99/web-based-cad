@@ -20,3 +20,10 @@ function flatten2d(arr){
     })
     return ret
 }
+
+// euclidian distance of two points p1 and p2
+function euclidian(p1, p2){
+    let dx = Math.abs(p1[0] - p2[0])
+    let dy = Math.abs(p1[1] - p2[1])
+    return Math.sqrt(dx*dx + dy*dy)
+}

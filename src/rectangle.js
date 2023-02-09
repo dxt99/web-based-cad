@@ -1,7 +1,7 @@
 class Rectangle{
     constructor() {
-        this.start = null
-        this.end = null
+        this.start = null // upper left corner
+        this.end = null // lower right corner
         this.startColor = null
         this.endColor = null
 
@@ -11,20 +11,34 @@ class Rectangle{
         this.leftColor = null
     }
 
-    isModelOn(x, y, delta = 0.01) {
+    isOnModel(x, y, delta = 0) {
         // TODO
-        return true;
+        console.log(this.start)
+        console.log(this.end)
+        return x>=this.start[0] && x<=this.end[0] && y<=this.start[1] && y>=this.end[1]
     }
 
-    isPointOn(x, y, delta = 0.01){
-
+    isOnVertex(x, y, delta = 0){
+        
     }
 
     getSize(){
-        return (
+        return [
             Math.abs(this.start[0] - this.end[0]),
             Math.abs(this.start[1] - this.end[1])
-        )
+        ]
+    }
+
+    setWidth(len){
+        mid = (this.start[0] + this.end[0]) / 2
+        this.start[0] = mid - len / 2
+        this.end[1] = mid + len / 2
+    }
+
+    setHeight(len){
+        mid = (this.start[1] + this.end[1]) / 2
+        this.start[1] = mid + len / 2
+        this.end[1] = mid - len / 2
     }
 
     render(gl, program){
