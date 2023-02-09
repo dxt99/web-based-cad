@@ -66,6 +66,7 @@ function render(){
     models['rectangles'].forEach(rect => {
         rect.render(gl, program)
     })
+    window.requestAnimFrame(render)
 }
 /* 
     Listener logic
@@ -96,7 +97,6 @@ function resetModels(){
         "squares": [],
         "rectangles": []
     }
-    render()
 }
 
 function changeColor(){
@@ -125,7 +125,6 @@ function handleLineClick(x, y){
         pendingLine.endColor = curColor
         models['lines'].push(pendingLine)
         pendingLine = new Line()
-        render()
         prompt.innerHTML = "Select line start"
     }
 }
@@ -151,7 +150,6 @@ function handleRectangleClick(x, y){
         }
         models['rectangles'].push(pendingRectangle)
         pendingRectangle = new Rectangle()
-        render()
         prompt.innerHTML = "Select rectangle upper left corner"
     }
 }
@@ -183,3 +181,4 @@ canvas.addEventListener('mousedown', function(e) {
 })
 colorPicker.addEventListener("change", () => {changeColor()})
 
+render()
