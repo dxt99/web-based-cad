@@ -7,12 +7,10 @@ class Line{
     }
 
     copy(data){
-        console.log("here")
         this.start = data["start"]
         this.end = data["end"]
         this.startColor = data["startColor"]
         this.endColor = data["endColor"]
-        console.log(this.start)
     }
 
     isOnVertex(x, y, delta = 5) {
@@ -52,8 +50,8 @@ class Line{
 
     render(gl, program){
         if (this.start[0] > this.end[0]){
-            [this.start, this.end] = [this.end, this.start]
-            [this.startColor, this.endColor] = [this.endColor, this.startColor]
+            this.end = [this.start, this.start = this.end][0];
+            this.endColor = [this.startColor, this.startColor = this.endColor][0];
         }
         var vertices = flatten2d([
             this.start,

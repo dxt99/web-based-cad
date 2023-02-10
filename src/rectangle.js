@@ -50,15 +50,31 @@ class Rectangle{
     }
 
     render(gl, program){
-        if (this.start[0] > this.end[0]){
-            [this.start, this.end] = [this.end, this.start]
-            [this.startColor, this.endColor] = [this.endColor, this.startColor]
-            [this.rightColor, this.leftColor] = [this.leftColor, this.rightColor]
+        // make sure start is upper left and end is lower right
+        if (this.start[0] < this.end[0] && this.start[1] < this.end[1]){
+            this.end = [this.start, this.start = this.end][0]
+            this.endColor = [this.startColor, this.startColor = this.endColor][0]
+            this.rightColor = [this.leftColor, this.leftColor = this.rightColor][0]
+        }
+        if (this.start[0] > this.end[0] && this.start[1] > this.end[1]){
+            let tempStart = this.start
+            let tempEnd = this.end
+            this.start = [tempEnd[0], tempStart[1]]
+            this.end = [tempStart[0], tempEnd[1]]
+            if (this.rightColor !== null) this.rightColor = [this.startColor, this.startColor = this.endColor][0]
+            if (this.leftColor !== null) this.leftColor = [this.endColor, this.endColor = this.leftColor][0]
+        }
+        else if (this.start[0] > this.end[0]){
+            this.end = [this.start, this.start = this.end][0]
+            this.endColor = [this.startColor, this.startColor = this.endColor][0]
+            this.rightColor = [this.leftColor, this.leftColor = this.rightColor][0]
         }
         this.vertexRight = [this.end[0], this.start[1]]
         this.vertexLeft = [this.start[0], this.end[1]]
         if (this.rightColor === null)this.rightColor = this.startColor
         if (this.leftColor === null)this.leftColor = this.endColor
+
+        // start rendering
         var vertices = flatten2d([
             this.start,
             this.vertexRight,
