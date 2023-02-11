@@ -35,21 +35,32 @@
         </div>
         <div class = "actions" id = "actionDiv">
             <div id = "actionDisplay" style = "display: none"></div>
-            <div id = "lineForm" style = "display: none">
-                <form>
-                    <label for="lineLength">Set length:</label>
-                    <input type="text" id="lineLength" name="lineLength"><br>
-                    <input type="button" value="Submit" id="submitLineLength">
-                </form>
-            </div>
-            <div id = "rectangleForm" style = "display: none">
-                <form>
-                    <label for="fname">Set width:</label>
-                    <input type="text" id="fname" name="fname"><br>
-                    <label for="lname">Set height:</label>
-                    <input type="text" id="lname" name="lname"><br>
-                    <input type="button" value="Submit" id="submitRectangleSize">
-                </form>
+            <div class = "form-holder">
+                <div id = "transformForm" style = "display: none">
+                    <form>
+                        <label for="rotation">Rotate:</label>
+                        <input type="text" id="rotation" name="rotation"><br>
+                        <label for="dilation">Dilate:</label>
+                        <input type="text" id="dilation" name="dilation"><br>
+                        <input type="button" value="Submit" id="submitTransform">
+                    </form>
+                </div>
+                <div id = "lineForm" style = "display: none">
+                    <form>
+                        <label for="lineLength">Set length:</label>
+                        <input type="text" id="lineLength" name="lineLength"><br>
+                        <input type="button" value="Submit" id="submitLineLength">
+                    </form>
+                </div>
+                <div id = "rectangleForm" style = "display: none">
+                    <form>
+                        <label for="fname">Set width:</label>
+                        <input type="text" id="fname" name="fname"><br>
+                        <label for="lname">Set height:</label>
+                        <input type="text" id="lname" name="lname"><br>
+                        <input type="button" value="Submit" id="submitRectangleSize">
+                    </form>
+                </div>
             </div>
         </div>
     </body>

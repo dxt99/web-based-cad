@@ -39,3 +39,9 @@ h4 {
     padding-left: 16px;
     text-align: left;
 }
+
+.form-holder{
+    display: grid;
+    grid-template-columns: repeat(3, 0.2fr);
+    grid-auto-rows: 200px;
+}

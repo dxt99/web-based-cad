@@ -14,6 +14,9 @@ const loadButton = document.getElementById("load")
 const prompt = document.getElementById("prompt")
 const actionDisplay = document.getElementById("actionDisplay")
 
+const transformForm = document.getElementById("transformForm")
+const transformButton = document.getElementById("submitTransform")
+
 const lineForm = document.getElementById("lineForm")
 const lineLengthButton = document.getElementById("submitLineLength")
 
@@ -60,7 +63,8 @@ let selectedModel = null
 let models = {
     "lines" : [],
     "squares": [],
-    "rectangles": []
+    "rectangles": [],
+    "polygons": []
 }
 let curColor = [0, 0, 0, 1.0]
 
@@ -113,32 +117,41 @@ function loadAllModels(){
         // here we tell the reader what to do when it's done reading...
         reader.onload = readerEvent => {
             var content = readerEvent.target.result; // this is the content!
-            data = JSON.parse(content)
-            resetModels()
-            for (const [key, value] of Object.entries(data)) {
-                value.forEach(model => {
-                    let newModel = null;
-                    if (key === "lines") newModel = new Line()
-                    if (key === "rectangles") newModel = new Rectangle()
-                    newModel.copy(model)
-                    console.log(newModel)
-                    models[key].push(newModel)
-                })
+            try{
+                data = JSON.parse(content)
+                newModels = {
+                    "lines" : [],
+                    "squares": [],
+                    "rectangles": [],
+                    "polygons": []
+                }
+                for (const [key, value] of Object.entries(data)) {
+                    value.forEach(model => {
+                        let newModel = null;
+                        if (key === "lines") newModel = new Line()
+                        if (key === "rectangles") newModel = new Rectangle()
+                        newModel.copy(model)
+                        console.log(newModel)
+                        newModels[key].push(newModel)
+                    })
+                }
+                resetModels()
+                models = newModels
+            }catch{
+                // no need
             }
-            console.log(data)
-            console.log(models)
+            
         }
     }
     input.click();
     document.body.removeChild(input)
-
-
 }
 
 function clearStates(){
     // clears all pending states
     pendingModel = null
     selectedModel = null
+    transformForm.style.display = "none"
     lineForm.style.display = "none"
     rectangleForm.style.display = "none"
     actionDisplay.style.display = "none"
@@ -167,7 +180,8 @@ function resetModels(){
     models = {
         "lines" : [],
         "squares": [],
-        "rectangles": []
+        "rectangles": [],
+        "polygons": []
     }
 }
 
@@ -298,8 +312,11 @@ function handleClick(canvas, event){
         let type = ret[0]
         let model = ret[1]
         selectedModel = model
-        if (type == "lines") handleLineSelect()
-        if (type == "rectangles")handleRectangleSelect()
+        // transformation form
+        if (type !== "none")transformForm.style.display = "block"
+        // model-specific form
+        if (type === "lines")handleLineSelect()
+        if (type === "rectangles")handleRectangleSelect()
     }
     if (mode=="line")handleLineClick(x, y)
     if (mode=="rectangle")handleRectangleClick(x, y)
