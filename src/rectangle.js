@@ -9,6 +9,9 @@ class Rectangle{
         this.rightColor = null
         this.vertexLeft = null
         this.leftColor = null
+
+        this.rotation = 0
+        this.dilation = 1
     }
 
     copy(data){
@@ -20,6 +23,8 @@ class Rectangle{
         this.rightColor = data["rightColor"]
         this.vertexLeft = data["vertexLeft"]
         this.leftColor = data["leftColor"]
+        this.rotation = data["rotation"]
+        this.dilation = data["dilation"]
     }
 
     isOnModel(x, y, delta = 0) {
@@ -38,13 +43,13 @@ class Rectangle{
     }
 
     setWidth(len){
-        mid = (this.start[0] + this.end[0]) / 2
+        let mid = (this.start[0] + this.end[0]) / 2
         this.start[0] = mid - (len / 2)
         this.end[0] = mid + (len / 2)
     }
 
     setHeight(len){
-        mid = (this.start[1] + this.end[1]) / 2
+        let mid = (this.start[1] + this.end[1]) / 2
         this.start[1] = mid + (len / 2)
         this.end[1] = mid - (len / 2)
     }
@@ -75,12 +80,12 @@ class Rectangle{
         if (this.leftColor === null)this.leftColor = this.endColor
 
         // start rendering
-        var vertices = flatten2d([
-            this.start,
-            this.vertexRight,
-            this.end,
-            this.vertexLeft
-        ])
+        let pts = [this.start, this.vertexRight, this.end, this.vertexLeft]
+        pts = dilate(pts, this.dilation)
+        pts = rotate(pts, this.rotation)
+        var vertices = flatten2d(
+            to_float_pts(pts, gl.canvas)
+        )
 
         var colors = flatten2d([
             this.startColor,

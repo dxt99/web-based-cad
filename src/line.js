@@ -4,6 +4,8 @@ class Line{
         this.end = null
         this.startColor = null
         this.endColor = null
+        this.rotation = 0
+        this.dilation = 1
     }
 
     copy(data){
@@ -11,6 +13,8 @@ class Line{
         this.end = data["end"]
         this.startColor = data["startColor"]
         this.endColor = data["endColor"]
+        this.rotation = data["rotation"]
+        this.dilation = data["dilation"]
     }
 
     isOnVertex(x, y, delta = 5) {
@@ -30,7 +34,9 @@ class Line{
 
     setLength(len){
         let cur = this.getLength()
-        mid = [
+        console.log(cur, len)
+        console.log(this)
+        let mid = [
             (this.start[0] + this.end[0])/2,
             (this.start[1] + this.end[1])/2
         ]
@@ -38,12 +44,11 @@ class Line{
         // cur * new = len * x - len * mid + cur * mid
         this.start[0] = (len * this.start[0] + mid[0] * (cur - len)) / cur
         this.start[1] = (len * this.start[1] + mid[1] * (cur - len)) / cur
-
         this.end[0] = (len * this.end[0] + mid[0] * (cur - len)) / cur
         this.end[1] = (len * this.end[1] + mid[1] * (cur - len)) / cur
     }
 
-    isOnModel(x, y, delta = 0.01){
+    isOnModel(x, y, delta = 5){
         let dist = 2 * shoelace([[x, y], this.start, this.end]) / euclidian(this.start, this.end)
         return dist <= delta
     }
@@ -53,10 +58,14 @@ class Line{
             this.end = [this.start, this.start = this.end][0];
             this.endColor = [this.startColor, this.startColor = this.endColor][0];
         }
-        var vertices = flatten2d([
-            this.start,
-            this.end
-        ])
+
+        let pts = [this.start, this.end]
+        pts = dilate(pts, this.dilation)
+        pts = rotate(pts, this.rotation)
+        var vertices = flatten2d(
+            to_float_pts(pts, gl.canvas)
+        )
+
         var colors = flatten2d([
             this.startColor,
             this.endColor

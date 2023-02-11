@@ -59,6 +59,7 @@ gl.useProgram(program);
 */
 let mode = "cursor";
 let pendingModel = null
+let selectedType = null
 let selectedModel = null
 let models = {
     "lines" : [],
@@ -150,6 +151,7 @@ function loadAllModels(){
 function clearStates(){
     // clears all pending states
     pendingModel = null
+    selectedType = null
     selectedModel = null
     transformForm.style.display = "none"
     lineForm.style.display = "none"
@@ -206,6 +208,25 @@ function changeColor(){
     curColor = [red/255.0, green/255.0, blue/255.0, 1.0]
 }
 
+function updateTransformation(){
+    // sets rotation and dilation values on selected model
+    var index = models[selectedType].indexOf(selectedModel);
+    if (index !== -1) {
+        models[selectedType].splice(index, 1);
+    }
+    try{
+        let val = parseFloat(document.getElementById("rotation").value)
+        if (!isNaN(val))
+            selectedModel.rotation += val
+    }catch{}
+    try{
+        let val = parseFloat(document.getElementById("dilation").value)
+        if (!isNaN(val))
+            selectedModel.dilation *= val
+    }catch{}
+    models[selectedType].push(selectedModel)
+    console.log(selectedModel)
+}
 
 function handleLineClick(x, y){
     if (pendingModel.start === null){
@@ -228,7 +249,7 @@ function handleLineSelect(){
     let ret = selectedModel.getLength()
     actionDisplay.style.display = "block"
     actionDisplay.innerHTML = `
-        <p>Current length: ${to_pixel_x(ret, gl.canvas)}</p>
+        <p>Current length: ${ret}</p>
     `
     lineForm.style.display = "block"
 }
@@ -240,8 +261,8 @@ function changeLineSize(){
     }
     try{
         let val = parseFloat(document.getElementById("lineLength").value)
-        val = to_gl_x(val, gl.canvas)
-        selectedModel.setLength(val)
+        if (!isNaN(val))
+            selectedModel.setLength(val)
     }catch{}
     
     models["lines"].push(selectedModel)
@@ -273,8 +294,8 @@ function handleRectangleSelect(){
     console.log("Changing element")
     actionDisplay.style.display = "block"
     actionDisplay.innerHTML = `
-        <p>Current size: w = ${to_pixel_x(width, gl.canvas)}, 
-        h = ${to_pixel_y(height, gl.canvas)}</p>
+        <p>Current size: w = ${width}, 
+        h = ${height}</p>
     `
     rectangleForm.style.display = "block"
 }
@@ -286,13 +307,13 @@ function changeRectangleSize(){
     }
     try{
         let val = parseFloat(document.getElementById("fname").value)
-        val = to_gl_x(val, gl.canvas)
-        selectedModel.setWidth(val)
+        if (!isNaN(val))
+            selectedModel.setWidth(val)
     }catch{}
     try{
         let val = parseFloat(document.getElementById("lname").value)
-        val = to_gl_y(val, gl.canvas)
-        selectedModel.setHeight(val)
+        if (!isNaN(val))
+            selectedModel.setHeight(val)
     }catch{}
     
     models["rectangles"].push(selectedModel)
@@ -303,14 +324,14 @@ function handleClick(canvas, event){
     // handles clicks on canvas
     let x = (event.clientX - rect.left) * canvas.width/canvas.clientWidth
     let y = (event.clientY - rect.top) * canvas.height/canvas.clientHeight
-    x = to_float_x(x, gl.canvas)
-    y = to_float_y(y, gl.canvas)
+    y = canvas.clientHeight - y
     // checks for current mode
     if (mode=="cursor"){
         // check if a model is clicked
         let ret = getOnCoord(x, y)
         let type = ret[0]
         let model = ret[1]
+        selectedType = type
         selectedModel = model
         // transformation form
         if (type !== "none")transformForm.style.display = "block"
@@ -333,6 +354,7 @@ clearButton.addEventListener("click", () => {resetModels()})
 saveButton.addEventListener("click", () => {saveAllModels()})
 loadButton.addEventListener("click", () => {loadAllModels()})
 
+transformButton.addEventListener("click", () => {updateTransformation()})
 lineLengthButton.addEventListener("click", () => {changeLineSize()})
 rectangleSizeButton.addEventListener("click", () => {changeRectangleSize()})
 
