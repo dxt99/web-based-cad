@@ -60,3 +60,49 @@ function shoelace(arr){
     }
     return Math.abs(a/2)
 }
+
+// calculates centroid of a set of points (2D)
+function centroid(arr){
+    centroid = [0, 0]
+    arr.forEach(e => {
+        centroid[0] += e[0] / arr.len
+        centroid[1] += e[1] / arr.len
+    })
+    return centroid
+}
+
+// translates a set of points (2D)
+function translate(arr, delta){
+    for(let i=0; i<arr.len; i++){
+        arr[i][0] += delta[0]
+        arr[i][1] += delta[1]
+    }
+    return arr
+}
+
+// dilates a set of points from its centroid (2D)
+function dilate(arr, mult){
+    centroid = centroid(arr)
+    arr = translate(arr, -1 * centroid)
+    for(let i=0; i<arr.len; i++){
+        arr[i][0] *= mult
+        arr[i][1] *= mult
+    }
+    arr = translate(arr, centroid)
+    return arr
+}
+
+// rotates a set of points from the origin (2D)
+function rotate(arr, deg){
+    centroid = centroid(arr)
+    arr = translate(arr, -1 * centroid)
+    let rad = deg * Math.PI/180
+    for(let i=0; i<arr.len; i++){
+        arr[i][0] = [
+            arr[i][0] * Math.cos(rad) - arr[i] * Math.sin(rad),
+            arr[i][1] =  arr[i][0] * Math.sin(rad) + arr[i] * Math.cos(rad)
+        ][0]
+    }
+    arr = translate(arr, centroid)
+    return arr
+}
