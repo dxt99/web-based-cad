@@ -15,6 +15,16 @@ function to_float_pts(pts, canvas){
     return ret
 }
 
+//Pytagoras theorem
+function distance(p1,p2){
+    let a = p1[0] - p2[0]
+    let b = p1[1] - p2[1]
+
+    let c = Math.sqrt(a*a + b*b)
+
+    return c
+}
+
 // changes screen length to gl length
 function to_gl_x(len, canvas){
     let size = canvas.width

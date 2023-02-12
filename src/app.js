@@ -173,6 +173,10 @@ function changeState(newMode){
         prompt.innerHTML = "Select rectangle upper left corner"
         pendingModel = new Rectangle()
     }
+    if (mode=="square") {
+        prompt.innerHTML = "Select square center"
+        pendingModel = new Square()
+    }
 }
 
 
@@ -252,6 +256,20 @@ function handleLineSelect(){
         <p>Current length: ${ret}</p>
     `
     lineForm.style.display = "block"
+}
+
+function handleSquareClick(x,y){
+    console.log("Fungsi handle kepanggil");
+    if (pendingModel.center == null) {
+        pendingModel.center = [x,y]
+        prompt.innerHTML = "Select square range"
+    } else if (pendingModel.pivot == null){
+        pendingModel.pivot = [x,y]
+        models['squares'].push(pendingModel)
+        console.log(pendingModel);
+        pendingModel = new Square();
+        prompt.innerHTML = "Select square center"
+    }
 }
 
 function changeLineSize(){
@@ -341,6 +359,7 @@ function handleClick(canvas, event){
     }
     if (mode=="line")handleLineClick(x, y)
     if (mode=="rectangle")handleRectangleClick(x, y)
+    if (mode=="square")handleSquareClick(x,y)
 }
 
 /*
