@@ -258,20 +258,6 @@ function handleLineSelect(){
     lineForm.style.display = "block"
 }
 
-function handleSquareClick(x,y){
-    console.log("Fungsi handle kepanggil");
-    if (pendingModel.center == null) {
-        pendingModel.center = [x,y]
-        prompt.innerHTML = "Select square range"
-    } else if (pendingModel.pivot == null){
-        pendingModel.pivot = [x,y]
-        models['squares'].push(pendingModel)
-        console.log(pendingModel);
-        pendingModel = new Square();
-        prompt.innerHTML = "Select square center"
-    }
-}
-
 function changeLineSize(){
     var index = models["lines"].indexOf(selectedModel);
     if (index !== -1) {
@@ -285,6 +271,20 @@ function changeLineSize(){
     
     models["lines"].push(selectedModel)
     handleLineSelect()
+}
+
+function handleSquareClick(x,y){
+    console.log("Fungsi handle kepanggil");
+    if (pendingModel.center == null) {
+        pendingModel.center = [x,y]
+        prompt.innerHTML = "Select square range"
+    } else if (pendingModel.pivot == null){
+        pendingModel.pivot = [x,y]
+        models['squares'].push(pendingModel)
+        console.log(pendingModel);
+        pendingModel = new Square();
+        prompt.innerHTML = "Select square center"
+    }
 }
 
 function handleRectangleClick(x, y){
