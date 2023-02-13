@@ -23,6 +23,8 @@ const lineLengthButton = document.getElementById("submitLineLength")
 const rectangleForm = document.getElementById("rectangleForm")
 const rectangleSizeButton = document.getElementById("submitRectangleSize")
 
+const squareForm = document.getElementById('squareForm')
+const squareWidthButton = document.getElementById("submitSquareWidth")
 /*
     WebGL Setup
 */
@@ -277,6 +279,7 @@ function handleSquareClick(x,y){
     console.log("Fungsi handle kepanggil");
     if (pendingModel.center == null) {
         pendingModel.center = [x,y]
+        pendingModel.color = curColor
         prompt.innerHTML = "Select square range"
     } else if (pendingModel.pivot == null){
         pendingModel.pivot = [x,y]
@@ -285,6 +288,26 @@ function handleSquareClick(x,y){
         pendingModel = new Square();
         prompt.innerHTML = "Select square center"
     }
+}
+
+function handleSquareSelect() {
+    actionDisplay.style.display="block"
+    squareForm.style.display="block"
+}
+
+function changeSquareWidth() {
+    var index = models["squares"].indexOf(selectedModel);
+    if (index !== -1) {
+        models["squares"].splice(index, 1);
+    }
+    try{
+        let val = parseFloat(document.getElementById("squareWidth").value)
+        if (!isNaN(val))
+            selectedModel.setWidth(val)
+    }catch{}
+
+    models["squares"].push(selectedModel)
+    handleSquareSelect()
 }
 
 function handleRectangleClick(x, y){
@@ -356,6 +379,7 @@ function handleClick(canvas, event){
         // model-specific form
         if (type === "lines")handleLineSelect()
         if (type === "rectangles")handleRectangleSelect()
+        if (type === "squares")handleSquareSelect()
     }
     if (mode=="line")handleLineClick(x, y)
     if (mode=="rectangle")handleRectangleClick(x, y)
@@ -376,6 +400,7 @@ loadButton.addEventListener("click", () => {loadAllModels()})
 transformButton.addEventListener("click", () => {updateTransformation()})
 lineLengthButton.addEventListener("click", () => {changeLineSize()})
 rectangleSizeButton.addEventListener("click", () => {changeRectangleSize()})
+squareWidthButton.addEventListener("click",() => {changeSquareWidth()})
 
 canvas.addEventListener('mousedown', function(e) {
     handleClick(canvas, e)

@@ -3,10 +3,22 @@ class Square {
     constructor (){
         this.center = null
         this.pivot = null
-        this.length = null
+        this.width= null
+        this.color = null
+        this.dilation = 1
+        this.rotation = 0
         this.points = []
     }
 
+    setWidth(width) {
+        this.pivot = [this.center[0] + width,
+                    this.center[1] + width]
+    }
+
+    isOnModel(x,y) {
+        return x <= this.points[0][0] && y <= this.points[0][1]
+         && x >= this.points[2][0] && y >= this.points[2][1]
+    }
 
     getPointByCenter(x_direction,y_direction,width,center){
         
@@ -37,14 +49,17 @@ class Square {
     /**@param {WebGLProgram} program*/
     render(gl,program){               
         this.generatePoints(this.center,this.pivot)
+        
+        this.points = dilate(this.points, this.dilation)
+        this.points = rotate(this.points, this.rotation)
 
         let vertices = to_float_pts(this.points, gl.canvas)
 
         var colors = [
-            [1,0,0,1],
-            [1,0,0,1],
-            [1,0,0,1],
-            [1,0,0,1],
+            this.color,
+            this.color,
+            this.color,
+            this.color,
         ]
 
         var vertexBuffer = gl.createBuffer();
