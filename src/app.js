@@ -155,6 +155,7 @@ function clearStates(){
     pendingModel = null
     selectedType = null
     selectedModel = null
+    squareForm.style.display = "none"
     transformForm.style.display = "none"
     lineForm.style.display = "none"
     rectangleForm.style.display = "none"
