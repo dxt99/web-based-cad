@@ -6,6 +6,13 @@ class Polygon{
         this.dilation = 1
     }
 
+    copy(data){
+        this.points = data["points"]
+        this.colors = data["colors"]
+        this.rotation = data["rotation"]
+        this.dilation = data["dilation"]
+    }
+    
     render(gl, program){
         // render the polygon
         var vertices = flatten2d(to_float_pts(this.points, gl.canvas))

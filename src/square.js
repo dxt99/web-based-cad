@@ -10,6 +10,16 @@ class Square {
         this.points = []
     }
 
+    copy(data){
+        this.center = data["center"]
+        this.pivot = data["pivot"]
+        this.width = data["width"]
+        this.color = data["color"]
+        this.dilation = data["dilation"]
+        this.rotation = data["rotation"]
+        this.points = data["points"]
+    }
+    
     setWidth(width) {
         this.pivot = [this.center[0] + width,
                     this.center[1] + width]

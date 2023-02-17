@@ -134,6 +134,8 @@ function loadAllModels(){
                         let newModel = null;
                         if (key === "lines") newModel = new Line()
                         if (key === "rectangles") newModel = new Rectangle()
+                        if (key === "squares") newModel = new Square()
+                        if (key === "polygons") newModel = new Polygon()
                         newModel.copy(model)
                         console.log(newModel)
                         newModels[key].push(newModel)
