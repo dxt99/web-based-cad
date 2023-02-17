@@ -7,6 +7,7 @@ const cursorButton = document.getElementById("cursor")
 const lineButton = document.getElementById("line")
 const squareButton = document.getElementById("square")
 const rectangleButton = document.getElementById("rectangle")
+const polygonButton = document.getElementById("polygon")
 const clearButton = document.getElementById("clear")
 const saveButton = document.getElementById("save")
 const loadButton = document.getElementById("load")
@@ -54,7 +55,7 @@ gl.useProgram(program);
 
 /*
     States
-    mode -> current mode of operation: cursor/line/square/rectangle
+    mode -> current mode of operation: cursor/line/square/rectangle/polygon
     pendingModel->  model to be drawn, model type depends on mode of operation
     selectedModel -> model to be operated on, type depends on mode of operation
     models -> all models that are going to be rendered
@@ -179,6 +180,10 @@ function changeState(newMode){
     if (mode=="square") {
         prompt.innerHTML = "Select square center"
         pendingModel = new Square()
+    }
+    if (mode=="polygon") {
+        prompt.innerHTML = "Select polygon start"
+        pendingModel = new Polygon()
     }
 }
 
@@ -311,6 +316,23 @@ function changeSquareWidth() {
     handleSquareSelect()
 }
 
+function handlePolygonClick(x, y){
+    if (pendingModel.points.length < 2){
+        // add first point
+        pendingModel.points.push([x, y])
+        pendingModel.colors.push(curColor)
+        prompt.innerHTML = "Select next point"
+    }
+    else {
+        // add next point
+        pendingModel.points.push([x, y])
+        pendingModel.colors.push(curColor)
+        
+        models['polygons'].push(pendingModel)
+        prompt.innerHTML = "Select next point or click cursor to stop"
+    }
+}
+
 function handleRectangleClick(x, y){
     if (pendingModel.start === null){
         // add start of rectangle
@@ -385,6 +407,7 @@ function handleClick(canvas, event){
     if (mode=="line")handleLineClick(x, y)
     if (mode=="rectangle")handleRectangleClick(x, y)
     if (mode=="square")handleSquareClick(x,y)
+    if (mode=="polygon")handlePolygonClick(x,y)
 }
 
 /*
@@ -394,6 +417,7 @@ cursorButton.addEventListener("click", () => {changeState("cursor")})
 lineButton.addEventListener("click", () => {changeState("line")})
 squareButton.addEventListener("click", () => {changeState("square")})
 rectangleButton.addEventListener("click", () => {changeState("rectangle")})
+polygonButton.addEventListener("click", () => {changeState("polygon")})
 clearButton.addEventListener("click", () => {resetModels()})
 saveButton.addEventListener("click", () => {saveAllModels()})
 loadButton.addEventListener("click", () => {loadAllModels()})
