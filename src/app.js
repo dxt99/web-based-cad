@@ -335,6 +335,10 @@ function handlePolygonClick(x, y){
     }
 }
 
+function handlePolygonSelect(){
+    actionDisplay.style.display = "block"
+}
+
 function handleRectangleClick(x, y){
     if (pendingModel.start === null){
         // add start of rectangle
@@ -405,6 +409,7 @@ function handleClick(canvas, event){
         if (type === "lines")handleLineSelect()
         if (type === "rectangles")handleRectangleSelect()
         if (type === "squares")handleSquareSelect()
+        if (type === "polygons")handlePolygonSelect()
     }
     if (mode=="line")handleLineClick(x, y)
     if (mode=="rectangle")handleRectangleClick(x, y)

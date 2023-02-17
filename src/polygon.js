@@ -12,10 +12,43 @@ class Polygon{
         this.rotation = data["rotation"]
         this.dilation = data["dilation"]
     }
-    
+
+    isOnModel(x,y) {
+        // check if point is inside polygon
+        var minX = this.points[0][0], maxX = this.points[0][0]
+        var minY = this.points[0][1], maxY = this.points[0][1]
+
+        for (let i = 1; i < this.points.length; i++) {
+            var p = this.points[i]
+            minX = Math.min(p[0], minX)
+            maxX = Math.max(p[0], maxX)
+            minY = Math.min(p[1], minY)
+            maxY = Math.max(p[1], maxY)
+        }
+
+        if (x < minX || x > maxX || y < minY || y > maxY) {
+            return false
+        }
+
+        var intersections = 0
+        for (let i = 0, j = this.points.length - 1; i < this.points.length; j = i++) {
+            var xi = this.points[i][0], yi = this.points[i][1]
+            var xj = this.points[j][0], yj = this.points[j][1]
+
+            if (((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+                intersections++;
+            }
+        }
+        return intersections % 2 != 0
+    }
+
     render(gl, program){
         // render the polygon
-        var vertices = flatten2d(to_float_pts(this.points, gl.canvas))
+        let pts = this.points
+        pts = rotate(pts, this.rotation)
+        pts = dilate(pts, this.dilation)
+
+        var vertices = flatten2d(to_float_pts(pts, gl.canvas))
         var colors = flatten2d(this.colors)
 
         var vertexBuffer = gl.createBuffer()
