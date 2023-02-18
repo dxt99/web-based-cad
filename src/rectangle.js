@@ -31,8 +31,13 @@ class Rectangle{
         return x>=this.start[0] && x<=this.end[0] && y<=this.start[1] && y>=this.end[1]
     }
 
-    isOnVertex(x, y, delta = 0){
-        
+    isOnVertex(x, y, delta = 5){
+        let points = [this.start, this.end, this.vertexLeft, this.vertexRight]
+        for(let i=0; i<4; i++){
+            let point = points[i]
+            if (euclidian(point, [x, y] <= delta)) return true
+        }
+        return false
     }
 
     getSize(){

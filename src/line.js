@@ -18,14 +18,12 @@ class Line{
     }
 
     isOnVertex(x, y, delta = 5) {
-        f = false
-        if (this.start !== null && euclidian([x, y], this.start) <= delta){
-            f = true         
+        let points = [this.start, this.end]
+        for(let i=0; i<4; i++){
+            let point = points[i]
+            if (euclidian(point, [x, y] <= delta)) return true
         }
-        if (this.end !== null && euclidian([x, y], this.end) <= delta){
-            f = true         
-        }
-        return f
+        return false
     }
 
     getLength(){
