@@ -35,10 +35,49 @@ class Rectangle{
         let points = [this.start, this.end, this.vertexLeft, this.vertexRight]
         for(let i=0; i<4; i++){
             let point = points[i]
-            if (euclidian(point, [x, y] <= delta)) return true
+            if (euclidian(point, [x, y]) <= delta) return true
         }
         return false
     }
+
+    changeColor(point, color, delta = 5){
+        if (euclidian(point, this.start) <= delta) this.startColor = color
+        else if (euclidian(point, this.end) <= delta) this.endColor = color
+        else if (euclidian(point, this.vertexRight) <= delta) this.rightColor = color
+        else if (euclidian(point, this.vertexLeft) <= delta) this.leftColor = color
+    }
+
+    changePoint(pointOrigin, pointDestination, delta = 5){
+        if (euclidian(pointOrigin, this.start) <= delta) this.start = pointDestination
+        else if (euclidian(pointOrigin, this.end) <= delta) this.end = pointDestination
+        else if (euclidian(point, this.vertexRight) <= delta){
+            let tempStart = this.startColor
+            let tempEnd = this.endColor
+
+            this.start = pointDestination
+            this.startColor = this.rightColor
+
+            this.end = this.vertexLeft
+            this.endColor = this.leftColor
+
+            this.rightColor = tempStart
+            this.leftColor = tempEnd
+        }
+        else if (euclidian(point, this.vertexLeft) <= delta){
+            let tempStart = this.startColor
+            let tempEnd = this.endColor
+
+            this.start = this.right
+            this.startColor = this.rightColor
+
+            this.end = pointDestination
+            this.endColor = this.leftColor
+
+            this.rightColor = tempStart
+            this.leftColor = tempEnd
+        }
+    }
+
 
     getSize(){
         return [

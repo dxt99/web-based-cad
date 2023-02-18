@@ -19,11 +19,21 @@ class Line{
 
     isOnVertex(x, y, delta = 5) {
         let points = [this.start, this.end]
-        for(let i=0; i<4; i++){
+        for(let i=0; i<2; i++){
             let point = points[i]
-            if (euclidian(point, [x, y] <= delta)) return true
+            if (euclidian(point, [x, y]) <= delta) return true
         }
         return false
+    }
+
+    changeColor(point, color, delta = 5){
+        if (euclidian(point, this.start) <= delta) this.startColor = color
+        else if (euclidian(point, this.end) <= delta) this.endColor = color
+    }
+
+    changePoint(pointOrigin, pointDestination, delta = 5){
+        if (euclidian(pointOrigin, this.start) <= delta) this.start = pointDestination
+        else if (euclidian(pointOrigin, this.end) <= delta) this.end = pointDestination
     }
 
     getLength(){
