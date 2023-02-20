@@ -65,13 +65,14 @@ function euclidian(p1, p2){
 }
 
 // area of n ordered points
-function shoelace(arr){
+function shoelace(arr, abs = true){
     let n = arr.length
     let a = arr[n-1][0] * arr[0][1] - arr[n-1][1] * arr[0][0]
     for(let i=0; i<n-1; i++){
         a += arr[i][0] * arr[i+1][1] - arr[i][1] * arr[i+1][0]
     }
-    return Math.abs(a/2)
+    if (abs) return Math.abs(a/2)
+    return a/2
 }
 
 // calculates centroid of a set of points (2D)
@@ -121,4 +122,53 @@ function rotate(pts, deg){
     }
     arr = translate(arr, center)
     return arr
+}
+
+// convex hull and its utils
+function orient(pt0, pt1, pt2){
+    let val = shoelace([pt0, pt1, pt2], false)
+    if (val<0) return -1 //clockwise
+    if (val>0) return 1 //cc
+    return 0 //line
+}
+
+function coll(pt0, pt1, pt2){ //check for colinearity
+    return orient(pt0, pt1, pt2) == 0
+}
+
+function get_angle(a, b){
+    return Math.atan2(b[1] - a[1], b[0] - a[0]);
+}
+
+function convex_hull(arr){
+    let pivot = arr[0];
+    for (let i = 1; i < arr.length; i++) {
+        const point = arr[i];
+        if (point[1] < pivot[1] || point[1] === pivot[1] && point[0] < pivot[0]) {
+            pivot = point;
+        }
+    }
+    let angles = Array.from(arr, (point) => [get_angle(pivot, point), point]);
+    angles.sort()
+
+    let candidates = []
+    for (let i=0; i<angles.length; i++){
+        let pt = angles[i][1]
+        let deg = angles[i][0]
+        if(i > 0 && angles[i-1][0] == deg && euclidian(pivot, pt) < euclidian(pivot, angles[i-1][1])){
+            candidates[candidates.length-1] = angles[i][1]
+        }else{
+            candidates.push(pt)
+        }
+    }
+    if (candidates.length < 3) return candidates;
+    let hull = [candidates[0], candidates[1]]
+    for(let i=2; i<candidates.length; i++){
+        if(orient(candidates[i-2], candidates[i-1], candidates[i])==-1){
+            hull[hull.length-1] = candidates[i]
+        }else{
+            hull.push(candidates[i])
+        }
+    }
+    return hull
 }

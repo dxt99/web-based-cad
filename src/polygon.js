@@ -44,7 +44,16 @@ class Polygon{
 
     render(gl, program){
         // render the polygon
-        let pts = this.points
+        let dict = {}
+        for(let i=0; i<this.points.length; i++){
+            dict[this.points[i]] = this.colors[i] 
+        }
+        let pts = convex_hull(this.points)
+        this.points = pts
+        this.colors = []
+        pts.forEach(pt => {
+            this.colors.push(dict[pt])
+        })
         pts = rotate(pts, this.rotation)
         pts = dilate(pts, this.dilation)
 
