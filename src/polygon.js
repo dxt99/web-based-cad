@@ -42,6 +42,31 @@ class Polygon{
         return intersections % 2 != 0
     }
 
+    isOnVertex(x, y, delta = 5) {
+        for(let i=0; i<this.points.length; i++){
+            if (euclidian(this.points[i], [x, y]) <= delta){
+                return true
+            }
+        }
+        return false
+    }
+
+    changeColor(point, color, delta = 5){
+        for(let i=0; i<this.points.length; i++){
+            if(euclidian(this.points[i], point) <= delta){
+                this.colors[i] = color
+            }
+        }
+    }
+
+    changePoint(pointOrigin, pointDestination, delta = 5){
+        for(let i=0; i<this.points.length; i++){
+            if(euclidian(this.points[i], pointOrigin) <= delta){
+                this.points[i] = pointDestination
+            }
+        }
+    }
+
     render(gl, program){
         // render the polygon
         let dict = {}
