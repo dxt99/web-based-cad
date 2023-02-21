@@ -26,6 +26,10 @@ const rectangleSizeButton = document.getElementById("submitRectangleSize")
 
 const squareForm = document.getElementById('squareForm')
 const squareWidthButton = document.getElementById("submitSquareWidth")
+
+const polygonForm = document.getElementById('polygonForm')
+const polygonAddButton = document.getElementById("addPointPolygon")
+const polygonRemoveButton = document.getElementById("removePointPolygon")
 /*
     WebGL Setup
 */
@@ -162,11 +166,22 @@ function clearStates(){
     transformForm.style.display = "none"
     lineForm.style.display = "none"
     rectangleForm.style.display = "none"
+    polygonForm.style.display = "none"
     actionDisplay.style.display = "none"
 }
 
 function changeState(newMode){
     // changes mode of operations
+    if (newMode=="polygonAdd"){
+        prompt.innerHTML = "Add polygon points"
+        mode = newMode
+        return
+    }
+    if (newMode=="polygonRemove"){
+        prompt.innerHTML = "Remove polygon points"
+        mode = newMode
+        return
+    }
     console.log(newMode)
     mode = newMode
     clearStates()
@@ -337,6 +352,37 @@ function handlePolygonClick(x, y){
 
 function handlePolygonSelect(){
     actionDisplay.style.display = "block"
+    polygonForm.style.display = "block"
+}
+
+function handlePolygonAdd(x, y){
+    if (selectedModel == null) return;
+    var index = models[selectedType].indexOf(selectedModel);
+    selectedModel.points.push([x,y])
+    selectedModel.colors.push(curColor)
+    models[selectedType].splice(index, 1)
+    models[selectedType].push(selectedModel)
+}
+
+function handlePolygonRemove(x, y){
+    if (selectedModel == null) return;
+    var index = models[selectedType].indexOf(selectedModel);
+    if (selectedModel.isOnVertex(x, y)){
+        if (selectedModel.points.length <= 3){
+            prompt.innerHTML = "Cannot remove any more points"
+            return
+        }
+
+        for(let i=0; i<selectedModel.points.length; i++){
+            if (euclidian(selectedModel.points[i], [x,y]) < 5){
+                selectedModel.points.splice(i, 1)
+                selectedModel.colors.splice(i, 1)
+                models[selectedType].splice(index, 1)
+                models[selectedType].push(selectedModel)
+                return
+            }
+        }
+    }
 }
 
 function handleRectangleClick(x, y){
@@ -415,6 +461,8 @@ function handleClick(canvas, event){
     if (mode=="rectangle")handleRectangleClick(x, y)
     if (mode=="square")handleSquareClick(x,y)
     if (mode=="polygon")handlePolygonClick(x,y)
+    if (mode=="polygonAdd")handlePolygonAdd(x,y)
+    if (mode=="polygonRemove")handlePolygonRemove(x,y)
 }
 
 /*
@@ -433,6 +481,8 @@ transformButton.addEventListener("click", () => {updateTransformation()})
 lineLengthButton.addEventListener("click", () => {changeLineSize()})
 rectangleSizeButton.addEventListener("click", () => {changeRectangleSize()})
 squareWidthButton.addEventListener("click",() => {changeSquareWidth()})
+polygonAddButton.addEventListener("click", () => {changeState("polygonAdd")})
+polygonRemoveButton.addEventListener("click", () => {changeState("polygonRemove")})
 
 canvas.addEventListener('mousedown', function(e) {
     handleClick(canvas, e)
