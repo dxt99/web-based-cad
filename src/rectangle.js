@@ -48,9 +48,26 @@ class Rectangle{
     }
 
     changePoint(pointOrigin, pointDestination, delta = 30){
-        if (euclidian(pointOrigin, this.start) <= delta) this.start = pointDestination
-        else if (euclidian(pointOrigin, this.end) <= delta) this.end = pointDestination
-        else if (euclidian(point, this.vertexRight) <= delta){
+        console.log("change point")
+        if (euclidian(pointOrigin, this.start) <= delta){
+            pointOrigin = this.start
+            if (Math.abs(pointDestination[0]-pointOrigin[0]) < Math.abs(pointDestination[1]-pointOrigin[1])){
+                pointDestination[0] = pointOrigin[0]
+            }else pointDestination[1] = pointOrigin[1]
+            this.start = pointDestination
+        }
+        else if (euclidian(pointOrigin, this.end) <= delta){
+            pointOrigin = this.end
+            if (Math.abs(pointDestination[0]-pointOrigin[0]) < Math.abs(pointDestination[1]-pointOrigin[1])){
+                pointDestination[0] = pointOrigin[0]
+            }else pointDestination[1] = pointOrigin[1]
+            this.end = pointDestination
+        }
+        else if (euclidian(pointOrigin, this.vertexRight) <= delta){
+            pointOrigin = this.vertexRight
+            if (Math.abs(pointDestination[0]-pointOrigin[0]) < Math.abs(pointDestination[1]-pointOrigin[1])){
+                pointDestination[0] = pointOrigin[0]
+            }else pointDestination[1] = pointOrigin[1]
             let tempStart = this.startColor
             let tempEnd = this.endColor
 
@@ -60,14 +77,18 @@ class Rectangle{
             this.end = this.vertexLeft
             this.endColor = this.leftColor
 
-            this.rightColor = tempStart
-            this.leftColor = tempEnd
+            this.rightColor = JSON.parse(JSON.stringify(tempStart));
+            this.leftColor = JSON.parse(JSON.stringify(tempEnd));
         }
-        else if (euclidian(point, this.vertexLeft) <= delta){
+        else if (euclidian(pointOrigin, this.vertexLeft) <= delta){
+            pointOrigin = this.vertexLeft
+            if (Math.abs(pointDestination[0]-pointOrigin[0]) < Math.abs(pointDestination[1]-pointOrigin[1])){
+                pointDestination[0] = pointOrigin[0]
+            }else pointDestination[1] = pointOrigin[1]
             let tempStart = this.startColor
             let tempEnd = this.endColor
 
-            this.start = this.right
+            this.start = this.vertexRight
             this.startColor = this.rightColor
 
             this.end = pointDestination
@@ -110,7 +131,7 @@ class Rectangle{
             let tempEnd = this.end
             this.start = [tempEnd[0], tempStart[1]]
             this.end = [tempStart[0], tempEnd[1]]
-            if (this.rightColor !== null) this.rightColor = [this.startColor, this.startColor = this.endColor][0]
+            if (this.rightColor !== null) this.rightColor = [this.startColor, this.startColor = this.rightColor][0]
             if (this.leftColor !== null) this.leftColor = [this.endColor, this.endColor = this.leftColor][0]
         }
         else if (this.start[0] > this.end[0]){
