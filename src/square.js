@@ -29,7 +29,7 @@ class Square {
                 !this.leftDownColor && !this.leftUpColor
     }
 
-    isOnVertex(x, y, delta = 5){
+    isOnVertex(x, y, delta = 30){
         let points = this.points
         for(let i=0; i<4; i++){
             let point = points[i]
@@ -45,7 +45,7 @@ class Square {
         else if (euclidian(point, this.points[3]) <= delta) this.leftUpColor = color
     }
 
-    changePoint(pointOrigin,pointDestination, delta=5) {
+    changePoint(pointOrigin,pointDestination, delta=30) {
         // asumsi yang diklik itu bisa titik mana aja asal ada di vertex
         if (euclidian(pointOrigin,pointDestination)<=delta) {
             this.pivot = pointDestination 

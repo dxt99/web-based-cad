@@ -32,6 +32,10 @@ const polygonForm = document.getElementById('polygonForm')
 const polygonAddButton = document.getElementById("addPointPolygon")
 const polygonRemoveButton = document.getElementById("removePointPolygon")
 
+const changePointForm = document.getElementById('changePointForm')
+const sliderX = document.getElementById('sliderX')
+const sliderY = document.getElementById('sliderY')
+
 /*
     WebGL Setup
 */
@@ -170,6 +174,19 @@ function clearStates(){
     rectangleForm.style.display = "none"
     polygonForm.style.display = "none"
     actionDisplay.style.display = "none"
+    changePointForm.style.display = "none"
+}
+
+function clearDisplay(){
+    // clears all display elements
+    // prompt.innerHTML = ""
+    actionDisplay.style.display = "none"
+    transformForm.style.display = "none"
+    squareForm.style.display = "none"
+    lineForm.style.display = "none"
+    rectangleForm.style.display = "none"
+    polygonForm.style.display = "none"
+    changePointForm.style.display = "none"
 }
 
 function changeState(newMode){
@@ -280,13 +297,26 @@ function handleLineClick(x, y){
     }
 }
 
-function handleLineSelect(){
+function handleLineSelect(x,y){
     let ret = selectedModel.getLength()
     actionDisplay.style.display = "block"
     actionDisplay.innerHTML = `
         <p>Current length: ${ret}</p>
     `
     lineForm.style.display = "block"
+
+    if(selectedModel.isOnVertex(x,y) == true){
+        changePointForm.style.display = "block"
+
+        let sliderX = document.getElementById("sliderX")
+        let sliderY = document.getElementById("sliderY")
+        sliderX.value = x
+        sliderY.value = y
+
+        submitPointChange.addEventListener("click", () => {changePoint(x,y)})
+    } else{
+        changePointForm.style.display = "none"
+    }
 }
 
 function changeLineSize(){
@@ -319,9 +349,21 @@ function handleSquareClick(x,y){
     }
 }
 
-function handleSquareSelect() {
+function handleSquareSelect(x,y) {
     actionDisplay.style.display="block"
     squareForm.style.display="block"
+    if(selectedModel.isOnVertex(x,y) == true){
+        changePointForm.style.display = "block"
+
+        let sliderX = document.getElementById("sliderX")
+        let sliderY = document.getElementById("sliderY")
+        sliderX.value = x
+        sliderY.value = y
+
+        submitPointChange.addEventListener("click", () => {changePoint(x,y)})
+    } else{
+        changePointForm.style.display = "none"
+    }
 }
 
 function changeSquareWidth() {
@@ -356,9 +398,20 @@ function handlePolygonClick(x, y){
     }
 }
 
-function handlePolygonSelect(){
-    actionDisplay.style.display = "block"
+function handlePolygonSelect(x,y){
     polygonForm.style.display = "block"
+    if(selectedModel.isOnVertex(x,y) == true){
+        changePointForm.style.display = "block"
+
+        let sliderX = document.getElementById("sliderX")
+        let sliderY = document.getElementById("sliderY")
+        sliderX.value = x
+        sliderY.value = y
+
+        submitPointChange.addEventListener("click", () => {changePoint(x,y)})
+    } else{
+        changePointForm.style.display = "none"
+    }
 }
 
 function handlePolygonAdd(x, y){
@@ -409,7 +462,7 @@ function handleRectangleClick(x, y){
     }
 }
 
-function handleRectangleSelect(){
+function handleRectangleSelect(x,y){
     let ret = selectedModel.getSize()
     let width = ret[0]
     let height = ret[1]
@@ -420,6 +473,18 @@ function handleRectangleSelect(){
         h = ${height}</p>
     `
     rectangleForm.style.display = "block"
+    if(selectedModel.isOnVertex(x,y) == true){
+        changePointForm.style.display = "block"
+
+        let sliderX = document.getElementById("sliderX")
+        let sliderY = document.getElementById("sliderY")
+        sliderX.value = x
+        sliderY.value = y
+
+        submitPointChange.addEventListener("click", () => {changePoint(x,y)})
+    } else{
+        changePointForm.style.display = "none"
+    }
 }
 
 function changeRectangleSize(){
@@ -449,6 +514,16 @@ function handleChangeColorClick(x,y,color){
     model.changeColor([x,y],color)
 }
 
+function changePoint(x,y){
+    try{
+        let valX = parseFloat(document.getElementById("sliderX").value)
+        let valY = parseFloat(document.getElementById("sliderY").value)
+        if (!isNaN(valX) && !isNaN(valY)) 
+            selectedModel.changePoint([x, y], [valX, valY])
+            changePointForm.style.display = "none"
+    }catch{}
+}
+
 function handleClick(canvas, event){
     // handles clicks on canvas
     let x = (event.clientX - rect.left) * canvas.width/canvas.clientWidth
@@ -464,11 +539,12 @@ function handleClick(canvas, event){
         selectedModel = model
         // transformation form
         if (type !== "none")transformForm.style.display = "block"
+        else clearDisplay()
         // model-specific form
-        if (type === "lines")handleLineSelect()
-        if (type === "rectangles")handleRectangleSelect()
-        if (type === "squares")handleSquareSelect()
-        if (type === "polygons")handlePolygonSelect()
+        if (type === "lines")handleLineSelect(x,y)
+        if (type === "rectangles")handleRectangleSelect(x,y)
+        if (type === "squares")handleSquareSelect(x,y)
+        if (type === "polygons")handlePolygonSelect(x,y)
     }
     if (mode=="changeColor")handleChangeColorClick(x,y,curColor)
     if (mode=="line")handleLineClick(x, y)

@@ -17,7 +17,7 @@ class Line{
         this.dilation = data["dilation"]
     }
 
-    isOnVertex(x, y, delta = 5) {
+    isOnVertex(x, y, delta = 30) {
         let points = [this.start, this.end]
         for(let i=0; i<2; i++){
             let point = points[i]
@@ -31,7 +31,7 @@ class Line{
         else if (euclidian(point, this.end) <= delta) this.endColor = color
     }
 
-    changePoint(pointOrigin, pointDestination, delta = 5){
+    changePoint(pointOrigin, pointDestination, delta = 30){
         if (euclidian(pointOrigin, this.start) <= delta) this.start = pointDestination
         else if (euclidian(pointOrigin, this.end) <= delta) this.end = pointDestination
     }
