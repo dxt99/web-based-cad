@@ -51,7 +51,7 @@ class Polygon{
         return false
     }
 
-    changeColor(point, color, delta = 5){
+    changeColor(point, color, delta = 20){
         for(let i=0; i<this.points.length; i++){
             if(euclidian(this.points[i], point) <= delta){
                 this.colors[i] = color

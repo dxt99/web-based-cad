@@ -40,7 +40,7 @@ class Rectangle{
         return false
     }
 
-    changeColor(point, color, delta = 5){
+    changeColor(point, color, delta = 20){
         if (euclidian(point, this.start) <= delta) this.startColor = color
         else if (euclidian(point, this.end) <= delta) this.endColor = color
         else if (euclidian(point, this.vertexRight) <= delta) this.rightColor = color

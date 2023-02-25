@@ -8,6 +8,7 @@ const lineButton = document.getElementById("line")
 const squareButton = document.getElementById("square")
 const rectangleButton = document.getElementById("rectangle")
 const polygonButton = document.getElementById("polygon")
+const changeColorButton = document.getElementById("changeColor")
 const clearButton = document.getElementById("clear")
 const saveButton = document.getElementById("save")
 const loadButton = document.getElementById("load")
@@ -30,6 +31,7 @@ const squareWidthButton = document.getElementById("submitSquareWidth")
 const polygonForm = document.getElementById('polygonForm')
 const polygonAddButton = document.getElementById("addPointPolygon")
 const polygonRemoveButton = document.getElementById("removePointPolygon")
+
 /*
     WebGL Setup
 */
@@ -197,6 +199,10 @@ function changeState(newMode){
     if (mode=="square") {
         prompt.innerHTML = "Select square center"
         pendingModel = new Square()
+    }
+
+    if (mode=="changeColor") {
+        prompt.innerHTML = "Change Color Mode"
     }
     if (mode=="polygon") {
         prompt.innerHTML = "Select polygon start"
@@ -436,6 +442,13 @@ function changeRectangleSize(){
     handleRectangleSelect()
 }
 
+function handleChangeColorClick(x,y,color){
+    
+    let ret = getOnCoord(x, y)
+    let model = ret[1]
+    model.changeColor([x,y],color)
+}
+
 function handleClick(canvas, event){
     // handles clicks on canvas
     let x = (event.clientX - rect.left) * canvas.width/canvas.clientWidth
@@ -457,6 +470,7 @@ function handleClick(canvas, event){
         if (type === "squares")handleSquareSelect()
         if (type === "polygons")handlePolygonSelect()
     }
+    if (mode=="changeColor")handleChangeColorClick(x,y,curColor)
     if (mode=="line")handleLineClick(x, y)
     if (mode=="rectangle")handleRectangleClick(x, y)
     if (mode=="square")handleSquareClick(x,y)
@@ -476,6 +490,7 @@ polygonButton.addEventListener("click", () => {changeState("polygon")})
 clearButton.addEventListener("click", () => {resetModels()})
 saveButton.addEventListener("click", () => {saveAllModels()})
 loadButton.addEventListener("click", () => {loadAllModels()})
+changeColorButton.addEventListener("click", ()=>{changeState("changeColor")})
 
 transformButton.addEventListener("click", () => {updateTransformation()})
 lineLengthButton.addEventListener("click", () => {changeLineSize()})

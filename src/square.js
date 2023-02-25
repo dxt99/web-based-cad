@@ -5,6 +5,10 @@ class Square {
         this.pivot = null
         this.width= null
         this.color = null
+        this.rightUpColor = null
+        this.leftUpColor = null
+        this.rightDownColor = null
+        this.leftDownColor = null
         this.dilation = 1
         this.rotation = 0
         this.points = []
@@ -20,6 +24,34 @@ class Square {
         this.points = data["points"]
     }
     
+    isColorEmpty(){
+        return !this.rightDownColor && !this.rightUpColor &&
+                !this.leftDownColor && !this.leftUpColor
+    }
+
+    isOnVertex(x, y, delta = 5){
+        let points = this.points
+        for(let i=0; i<4; i++){
+            let point = points[i]
+            if (euclidian(point, [x, y]) <= delta) return true
+        }
+        return false
+    }
+
+    changeColor(point,color,delta=20){
+        if (euclidian(point, this.points[0]) <= delta) this.rightUpColor = color
+        else if (euclidian(point, this.points[1]) <= delta) this.rightDownColor = color
+        else if (euclidian(point, this.points[2]) <= delta) this.leftDownColor = color
+        else if (euclidian(point, this.points[3]) <= delta) this.leftUpColor = color
+    }
+
+    changePoint(pointOrigin,pointDestination, delta=5) {
+        // asumsi yang diklik itu bisa titik mana aja asal ada di vertex
+        if (euclidian(pointOrigin,pointDestination)<=delta) {
+            this.pivot = pointDestination 
+        }
+    }
+
     setWidth(width) {
         this.pivot = [this.center[0] + width,
                     this.center[1] + width]
@@ -65,11 +97,18 @@ class Square {
 
         let vertices = to_float_pts(this.points, gl.canvas)
 
+        if (this.isColorEmpty()) {
+            this.rightUpColor = this.color
+            this.rightDownColor = this.color
+            this.leftDownColor = this.color
+            this.leftUpColor = this.color
+        }
+
         var colors = [
-            this.color,
-            this.color,
-            this.color,
-            this.color,
+            this.rightUpColor,
+            this.rightDownColor,
+            this.leftDownColor,
+            this.leftUpColor,
         ]
 
         var vertexBuffer = gl.createBuffer();
