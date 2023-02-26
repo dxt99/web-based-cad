@@ -269,12 +269,12 @@ function updateTransformation(){
     try{
         let val = parseFloat(document.getElementById("rotation").value)
         if (!isNaN(val))
-            selectedModel.rotation += val
+            selectedModel.rotate(val)
     }catch{}
     try{
         let val = parseFloat(document.getElementById("dilation").value)
         if (!isNaN(val))
-            selectedModel.dilation *= val
+            selectedModel.dilate(val)
     }catch{}
     models[selectedType].push(selectedModel)
     console.log(selectedModel)

@@ -4,8 +4,18 @@ class Line{
         this.end = null
         this.startColor = null
         this.endColor = null
-        this.rotation = 0
-        this.dilation = 1
+    }
+
+    rotate(val){
+        let pts = rotate_pts([this.start, this.end], val)
+        this.start = pts[0]
+        this.end = pts[1]
+    }
+
+    dilate(val){
+        pts = dilate_pts([this.start, this.end], val)
+        this.start = pts[0]
+        this.end = pts[1]
     }
 
     copy(data){
@@ -68,8 +78,6 @@ class Line{
         }
 
         let pts = [this.start, this.end]
-        pts = dilate(pts, this.dilation)
-        pts = rotate(pts, this.rotation)
         var vertices = flatten2d(
             to_float_pts(pts, gl.canvas)
         )

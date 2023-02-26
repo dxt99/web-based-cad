@@ -96,7 +96,7 @@ function translate(pts, delta){
 }
 
 // dilates a set of points from its centroid (2D)
-function dilate(pts, mult){
+function dilate_pts(pts, mult){
     let arr = JSON.parse(JSON.stringify(pts));
     let center = centroid(arr)
     arr = translate(arr, [center[0] * -1, center[1] * -1])
@@ -109,7 +109,7 @@ function dilate(pts, mult){
 }
 
 // rotates a set of points from the origin (2D)
-function rotate(pts, deg){
+function rotate_pts(pts, deg){
     let arr = JSON.parse(JSON.stringify(pts));
     let center = centroid(arr)
     arr = translate(arr, [center[0] * -1, center[1] * -1])
