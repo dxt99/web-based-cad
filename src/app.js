@@ -445,16 +445,20 @@ function handlePolygonRemove(x, y){
 }
 
 function handleRectangleClick(x, y){
-    if (pendingModel.start === null){
+    if (pendingModel.points.length === 0){
         // add start of rectangle
-        pendingModel.start = [x, y]
-        pendingModel.startColor = curColor
+        pendingModel.points.push([x, y])
+        pendingModel.colors.push(curColor)
+        pendingModel.colors.push(curColor)
         prompt.innerHTML = "Select rectangle lower right corner"
     }
-    else if (pendingModel.end === null){
+    else if (pendingModel.points.length === 1){
         // add end of line
-        pendingModel.end = [x, y]
-        pendingModel.endColor = curColor
+        pendingModel.points.push([x, pendingModel.points[0][1]])
+        pendingModel.points.push([x, y])
+        pendingModel.points.push([pendingModel.points[0][0], y])
+        pendingModel.colors.push(curColor)
+        pendingModel.colors.push(curColor)
 
         models['rectangles'].push(pendingModel)
         pendingModel = new Rectangle()
