@@ -23,8 +23,6 @@ class Line{
         this.end = data["end"]
         this.startColor = data["startColor"]
         this.endColor = data["endColor"]
-        this.rotation = data["rotation"]
-        this.dilation = data["dilation"]
     }
 
     isOnVertex(x, y, delta = 30) {

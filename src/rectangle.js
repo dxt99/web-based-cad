@@ -15,7 +15,7 @@ class Rectangle{
 
     copy(data){
         this.points = data["points"]
-        this.color = data["colors"]
+        this.colors = data["colors"]
     }
 
     isOnModel(x,y) {
