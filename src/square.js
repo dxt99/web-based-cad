@@ -1,131 +1,115 @@
 class Square {
+    constructor() {
+        this.points = [] //0, 1
+                        // 3, 2
+        this.colors = []
+    }
 
-    constructor (){
-        this.center = null
-        this.pivot = null
-        this.width= null
-        this.color = null
-        this.rightUpColor = null
-        this.leftUpColor = null
-        this.rightDownColor = null
-        this.leftDownColor = null
-        this.dilation = 1
-        this.rotation = 0
-        this.points = []
+    rotate(val){
+        this.points = rotate_pts(this.points, val)
+    }
+
+    dilate(val){
+        this.points = dilate_pts(this.points, val)
     }
 
     copy(data){
-        this.center = data["center"]
-        this.pivot = data["pivot"]
-        this.width = data["width"]
-        this.color = data["color"]
-        this.dilation = data["dilation"]
-        this.rotation = data["rotation"]
         this.points = data["points"]
-    }
-    
-    isColorEmpty(){
-        return !this.rightDownColor && !this.rightUpColor &&
-                !this.leftDownColor && !this.leftUpColor
+        this.color = data["colors"]
     }
 
-    isOnVertex(x, y, delta = 30){
-        let points = this.points
-        for(let i=0; i<4; i++){
-            let point = points[i]
-            if (euclidian(point, [x, y]) <= delta) return true
+    isOnModel(x,y) {
+        // check if point is inside polygon
+        var minX = this.points[0][0], maxX = this.points[0][0]
+        var minY = this.points[0][1], maxY = this.points[0][1]
+
+        for (let i = 1; i < this.points.length; i++) {
+            var p = this.points[i]
+            minX = Math.min(p[0], minX)
+            maxX = Math.max(p[0], maxX)
+            minY = Math.min(p[1], minY)
+            maxY = Math.max(p[1], maxY)
+        }
+
+        if (x < minX || x > maxX || y < minY || y > maxY) {
+            return false
+        }
+
+        var intersections = 0
+        for (let i = 0, j = this.points.length - 1; i < this.points.length; j = i++) {
+            var xi = this.points[i][0], yi = this.points[i][1]
+            var xj = this.points[j][0], yj = this.points[j][1]
+
+            if (((yi > y) != (yj > y)) && (x < (xj - xi) * (y - yi) / (yj - yi) + xi)) {
+                intersections++;
+            }
+        }
+        return intersections % 2 != 0
+    }
+
+    isOnVertex(x, y, delta = 30) {
+        for(let i=0; i<this.points.length; i++){
+            if (euclidian(this.points[i], [x, y]) <= delta){
+                return true
+            }
         }
         return false
     }
 
-    changeColor(point,color,delta=20){
-        if (euclidian(point, this.points[0]) <= delta) this.rightUpColor = color
-        else if (euclidian(point, this.points[1]) <= delta) this.rightDownColor = color
-        else if (euclidian(point, this.points[2]) <= delta) this.leftDownColor = color
-        else if (euclidian(point, this.points[3]) <= delta) this.leftUpColor = color
-    }
-
-    changePoint(pointOrigin,pointDestination, delta=30) {
-        // asumsi yang diklik itu bisa titik mana aja asal ada di vertex
-        if (euclidian(pointOrigin,pointDestination)<=delta) {
-            this.pivot = pointDestination 
+    changeColor(point, color, delta = 20){
+        for(let i=0; i<this.points.length; i++){
+            if(euclidian(this.points[i], point) <= delta){
+                this.colors[i] = color
+            }
         }
     }
 
-    setWidth(width) {
-        this.pivot = [this.center[0] + width,
-                    this.center[1] + width]
-    }
-
-    isOnModel(x,y) {
-        return x <= this.points[0][0] && y <= this.points[0][1]
-         && x >= this.points[2][0] && y >= this.points[2][1]
-    }
-
-    getPointByCenter(x_direction,y_direction,width,center){
-        
-        let x = (x_direction * width) + center[0]
-        let y = (y_direction * width) + center[1]
-        return [x,y]
-    }
-
-    generatePoints(center, pivot){
-        
-        const directions = [[1,1],[1,-1],[-1,-1],[-1,1]]
-
-        this.points = []
-        let width = Math.max(
-            Math.abs(pivot[0] - center[0]),
-            Math.abs(pivot[1] - center[1])
-        )
-
-        directions.forEach((direction) => {
-
-            this.points.push(this.getPointByCenter(direction[0],direction[1],
-                width,center))
-        })
-
-    }
-
-    /**@param {WebGLRenderingContext} gl */
-    /**@param {WebGLProgram} program*/
-    render(gl,program){               
-        this.generatePoints(this.center,this.pivot)
-        
-        this.points = dilate(this.points, this.dilation)
-        this.points = rotate(this.points, this.rotation)
-
-        let vertices = to_float_pts(this.points, gl.canvas)
-
-        if (this.isColorEmpty()) {
-            this.rightUpColor = this.color
-            this.rightDownColor = this.color
-            this.leftDownColor = this.color
-            this.leftUpColor = this.color
+    changePoint(pointOrigin, pointDestination, delta = 30){
+        for(let i=0; i<this.points.length; i++){
+            if(euclidian(this.points[i], pointOrigin) <= delta){
+                pointOrigin = this.points[i]
+                if (Math.abs(pointOrigin[0] - pointDestination[0]) < Math.abs(pointOrigin[1]-pointDestination[1])){
+                    pointDestination[0] = pointOrigin[0]
+                }else pointDestination[1] = pointOrigin[1]
+                this.points = translate(this.points, [pointDestination[0] - pointOrigin[0], pointDestination[1] - pointOrigin[1]])
+                return
+            }
         }
+    }
 
-        var colors = [
-            this.rightUpColor,
-            this.rightDownColor,
-            this.leftDownColor,
-            this.leftUpColor,
-        ]
+    getSize(){ // w
+        return euclidian(this.points[0], this.points[1])
+    }
 
-        var vertexBuffer = gl.createBuffer();
-        var colorBuffer = gl.createBuffer();
+    setWidth(len){
+        let cur = this.getSize()
+        let mid = centroid(this.points)
+        let pts = translate(this.points, [-1*mid[0], -1*mid[1]])
+        pts = dilate_pts(pts, len/cur)
+        pts = translate(pts, mid)
 
-        gl.bindBuffer(gl.ARRAY_BUFFER,vertexBuffer)
-        program.vertexPosAttrib = gl.getAttribLocation(program, 'pos');
-        gl.enableVertexAttribArray(program.vertexPosAttrib);
-        gl.vertexAttribPointer(program.vertexPosAttrib, 2, gl.FLOAT, false, 0, 0);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten2d(vertices)), gl.STATIC_DRAW);
+        this.points = JSON.parse(JSON.stringify(pts))
+    }
 
-        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer);
-        program.vertexColAttrib = gl.getAttribLocation(program, 'vColor');
-        gl.enableVertexAttribArray(program.vertexColAttrib);
-        gl.vertexAttribPointer(program.vertexColAttrib, 4, gl.FLOAT, false, 0, 0);
-        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(flatten2d(colors)), gl.STATIC_DRAW);
+    render(gl, program){
+        let pts = this.points
+        var vertices = flatten2d(to_float_pts(pts, gl.canvas))
+        var colors = flatten2d(this.colors)
 
-        gl.drawArrays(gl.TRIANGLE_FAN,0,4)
+        var vertexBuffer = gl.createBuffer()
+        gl.bindBuffer(gl.ARRAY_BUFFER, vertexBuffer)
+        program.vertexPosAttrib = gl.getAttribLocation(program, 'pos')
+        gl.enableVertexAttribArray(program.vertexPosAttrib)
+        gl.vertexAttribPointer(program.vertexPosAttrib, 2, gl.FLOAT, false, 0, 0)
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(vertices), gl.STATIC_DRAW)
+
+        var colorBuffer = gl.createBuffer()
+        gl.bindBuffer(gl.ARRAY_BUFFER, colorBuffer)
+        program.vertexColorAttrib = gl.getAttribLocation(program, 'vColor')
+        gl.enableVertexAttribArray(program.vertexColorAttrib)
+        gl.vertexAttribPointer(program.vertexColorAttrib, 4, gl.FLOAT, false, 0, 0)
+        gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(colors), gl.STATIC_DRAW)
+
+        gl.drawArrays(gl.TRIANGLE_FAN, 0, this.points.length)
     }
 }

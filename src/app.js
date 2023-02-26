@@ -336,12 +336,22 @@ function changeLineSize(){
 
 function handleSquareClick(x,y){
     console.log("Fungsi handle kepanggil");
-    if (pendingModel.center == null) {
-        pendingModel.center = [x,y]
-        pendingModel.color = curColor
+    if (pendingModel.points.length === 0) {
+        pendingModel.points.push([x, y])
+        pendingModel.colors.push(curColor)
+        pendingModel.colors.push(curColor)
+        pendingModel.colors.push(curColor)
+        pendingModel.colors.push(curColor)
         prompt.innerHTML = "Select square range"
-    } else if (pendingModel.pivot == null){
-        pendingModel.pivot = [x,y]
+    } else{
+        let add= Math.max(Math.abs(pendingModel.points[0][0] - x), Math.abs(pendingModel.points[0][1] - y))
+        let center = pendingModel.points[0]
+        pendingModel.points = [
+            [center[0] + add, center[1] + add],
+            [center[0] + add, center[1] - add],
+            [center[0] - add, center[1] - add],
+            [center[0] - add, center[1] + add]
+        ]
         models['squares'].push(pendingModel)
         console.log(pendingModel);
         pendingModel = new Square();
@@ -350,7 +360,11 @@ function handleSquareClick(x,y){
 }
 
 function handleSquareSelect(x,y) {
+    let ret = selectedModel.getSize()
     actionDisplay.style.display="block"
+    actionDisplay.innerHTML = `
+    <p>Current width: ${ret}</p>
+`
     squareForm.style.display="block"
     if(selectedModel.isOnVertex(x,y) == true){
         changePointForm.style.display = "block"
