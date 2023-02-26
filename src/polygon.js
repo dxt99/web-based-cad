@@ -2,8 +2,14 @@ class Polygon{
     constructor() {
         this.points = []
         this.colors = []
-        this.rotation = 0
-        this.dilation = 1
+    }
+
+    rotate(val){
+        this.points = rotate_pts(this.points, val)
+    }
+
+    dilate(val){
+        this.points = dilate_pts(this.points, val)
     }
 
     copy(data){
@@ -79,8 +85,6 @@ class Polygon{
         pts.forEach(pt => {
             this.colors.push(dict[pt])
         })
-        pts = rotate(pts, this.rotation)
-        pts = dilate(pts, this.dilation)
 
         var vertices = flatten2d(to_float_pts(pts, gl.canvas))
         var colors = flatten2d(this.colors)
